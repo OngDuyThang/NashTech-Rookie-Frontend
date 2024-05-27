@@ -7,9 +7,10 @@ import {
 import { TButtonProps, TButtonPropsExcept } from 'types/button'
 import clsx from 'clsx';
 import { Require } from 'types/common';
+import { COLOR } from 'utils/constant';
 
-interface ButtonProps extends 
-Require<AntdButtonProps, TButtonProps, TButtonPropsExcept> {
+interface ButtonProps extends
+    Require<AntdButtonProps, TButtonProps, TButtonPropsExcept> {
     fontSize?: string;
     fontWeight?: number | string;
     fit?: boolean;
@@ -22,7 +23,7 @@ const Button: FC<ButtonProps> = ({
     children,
     fontSize = '14px',
     fontWeight = '400',
-    type = 'default',
+    type = 'primary',
     icon,
     shape,
     size = 'middle',
@@ -32,7 +33,7 @@ const Button: FC<ButtonProps> = ({
     ...props
 }) => {
     return (
-        <AntdConfigProvider>
+        <AntdConfigProvider theme={{ token: { colorPrimary: COLOR.PRIMARY_BUTTON } }}>
             <AntdButton
                 className={clsx('flex items-center', className)}
                 style={{
@@ -40,7 +41,7 @@ const Button: FC<ButtonProps> = ({
                     fontWeight,
                     ...style
                 }}
-                {...{type, icon, shape, size, onClick, htmlType}}
+                {...{ type, icon, shape, size, onClick, htmlType }}
                 {...props}
             >
                 {children}

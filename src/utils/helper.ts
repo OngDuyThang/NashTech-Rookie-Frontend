@@ -1,4 +1,5 @@
 import { logout } from "api/auth"
+import { API_HOST, API_METHOD } from "./constant"
 
 export const getRoot = () => {
     if (typeof window !== 'undefined') {
@@ -58,4 +59,14 @@ export const isSession = (): boolean => {
         return user.isSession
     }
     return false
+}
+
+export const getGqlEndpoint = (serviceName: 'product' | 'order' | 'cart') => {
+    let port: number
+    switch (serviceName) {
+        case 'product': port = 3001; break;
+        case 'cart': port = 3002; break;
+        case 'order': port = 3003; break;
+    }
+    return `${API_METHOD}://${API_HOST}:${port}/graphql`
 }

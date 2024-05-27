@@ -60,9 +60,7 @@ const Layout: FC<LayoutProps> = ({
                         <Content>
                             {children}
                         </Content>
-                        <Footer >
-                            footer here
-                        </Footer>
+                        <Footer />
                     </Suspense>
                 </ToastContext.Provider>
             </AntdLayout>

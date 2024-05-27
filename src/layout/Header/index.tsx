@@ -1,7 +1,7 @@
 import { useState, type FC } from "react"
 import styles from './index.module.scss'
 import { User, OpenSider } from "layout/Components"
-import { Image, Div, Container, Drawer } from "components"
+import { Image, Div, Container, Drawer, Button } from "components"
 import clsx from "clsx"
 import { AntdHeader } from "layout"
 import { useAppSelector } from "hooks"
@@ -55,7 +55,11 @@ const Header: FC<HeaderProps> = ({
         <Container width="50" height="100" flex direct="row" gap='16' align="center" justify="end"
             className={styles.right}>
             {Links}
-            {isSession ? <User /> : 'Login here'}
+            {isSession ? <User /> :
+                <a href='https://www.google.com'>
+                    <Button>Login</Button>
+                </a>
+            }
         </Container>
     )
 

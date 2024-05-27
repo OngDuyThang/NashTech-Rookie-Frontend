@@ -1,0 +1,44 @@
+.root {
+    border: 1px solid red;
+    overflow-x: hidden;
+
+    .head {
+        padding: 16px;
+    }
+
+    .carousel-container {
+        border: 1px solid #ccc;
+        width: calc(100% - 32px);
+        padding: 16px 48px;
+        margin: auto
+    }
+
+    .featured {
+        border: 1px solid #ccc;
+        width: calc(100% - 32px);
+        padding: 16px 48px;
+        margin: auto;
+
+        .product-wrapper {
+            width: 20%;
+
+            @media (max-width: 1200px) {
+                width: 25%;
+            }
+            @media (max-width: 992px) {
+                width: 33.33%;
+            }
+            @media (max-width: 768px) {
+                width: 50%;
+            }
+            @media (max-width: 576px) {
+                width: 100%;
+            }
+            @media (max-width: 480px) {
+                width: 100%;
+            }
+        }
+    }
+
+    
+}

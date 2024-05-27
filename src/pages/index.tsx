@@ -1,11 +1,10 @@
-import {type FC} from 'react'
+import Home from 'modules/Home'
+import { type FC } from 'react'
 
-const Home: FC = () => {
+const HomePage: FC = () => {
   return (
-    <div>
-      Home page here
-    </div>
+    <Home />
   )
 }
 
-export default Home
+export default HomePage
