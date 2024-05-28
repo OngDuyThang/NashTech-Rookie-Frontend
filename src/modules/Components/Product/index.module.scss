@@ -1,5 +1,5 @@
 .root {
-    width: calc(100% - 32px);
+    width: calc(100% - 32px) !important;
     margin: auto;
     border: 1px solid #ccc;
 
@@ -23,5 +23,9 @@
             top: 50%;
             left: 0;
         }
+    }
+    
+    .hide {
+        display: none
     }
 }

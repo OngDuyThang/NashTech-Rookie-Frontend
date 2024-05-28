@@ -5,25 +5,27 @@ import store from 'store/index'
 import { Provider } from 'react-redux'
 import { PersistGate } from 'redux-persist/integration/react';
 import { persistStore } from 'redux-persist';
-import { QueryClient, QueryClientProvider } from 'react-query';
-import { ReactQueryDevtools } from 'react-query/devtools';
+import { ApolloClient, InMemoryCache, ApolloProvider } from '@apollo/client';
+import { getGqlEndpoint } from 'utils/helper';
 import { HeadSEO } from 'layout/Components'
 import Layout from 'layout'
 
 export default function App({ Component, pageProps }: AppProps) {
     const persistor = persistStore(store)
-    const queryClient = new QueryClient()
+    const apolloClient = new ApolloClient({
+        uri: getGqlEndpoint('product'),
+        cache: new InMemoryCache()
+    });
 
     return (
         <Provider store={store}>
             <PersistGate loading={null} persistor={persistor}>
-                <QueryClientProvider client={queryClient}>
-                    {/* <ReactQueryDevtools initialIsOpen={false} /> */}
+                <ApolloProvider client={apolloClient}>
                     <HeadSEO />
                     <Layout>
                         <Component {...pageProps} />
                     </Layout>
-                </QueryClientProvider>
+                </ApolloProvider>
             </PersistGate>
         </Provider>
     )

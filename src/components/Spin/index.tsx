@@ -4,10 +4,15 @@ import {
     SpinProps as AntdSpinProps,
     ConfigProvider as AntdConfigProvider
 } from 'antd'
+import { COLOR } from 'utils/constant'
 
 const Spin: FC<AntdSpinProps> = (props) => {
     return (
-        <AntdConfigProvider>
+        <AntdConfigProvider theme={{
+            token: {
+                colorPrimary: COLOR.PRIMARY_BUTTON
+            }
+        }}>
             <AntdSpin {...props} />
         </AntdConfigProvider>
     )

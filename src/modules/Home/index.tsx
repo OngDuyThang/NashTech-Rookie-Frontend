@@ -1,13 +1,25 @@
-import { Button, Carousel, Container, Div, Text } from 'components'
-import { Product } from 'modules/Components'
+import { Button, Carousel, Container, Div, Spin, Text } from 'components'
+import { Product, Products } from 'modules/Components'
 import { type FC } from 'react'
 import styles from './index.module.scss'
 import { Space } from 'antd'
+import { useQuery } from '@apollo/client'
+import { getPromotionProducts, getRecommendProducts } from 'graphql/product'
+import { ProductEntity } from '__generated__/graphql'
+
+const Loading = (
+    <Div className='w-full h-32 flex justify-center items-center'>
+        <Spin size='large' />
+    </Div>
+)
 
 const Home: FC = () => {
-    const featuredBooks = new Array(8).fill(0).map((book, index) => (
-        <Div key={index} className={styles['product-wrapper']}>
-            <Product />
+    const { data: dataPromotion } = useQuery(getPromotionProducts)
+    const { data: dataRecommend } = useQuery(getRecommendProducts)
+
+    const renderPromotions = (dataPromotion?.promotionProducts as ProductEntity[])?.map((product, index) => (
+        <Div key={index}>
+            <Product {...{ product }} />
         </Div>
     ))
 
@@ -24,20 +36,11 @@ const Home: FC = () => {
 
     const Promotions = (
         <Container className={styles['carousel-container']}>
-            <Carousel>
-                <Div>
-                    <Product />
-                </Div>
-                <Div>
-                    <Product />
-                </Div>
-                <Div>
-                    <Product />
-                </Div>
-                <Div>
-                    <Product />
-                </Div>
-            </Carousel>
+            {dataPromotion ? (
+                <Carousel>
+                    {renderPromotions}
+                </Carousel>
+            ) : Loading}
         </Container>
     )
 
@@ -52,9 +55,10 @@ const Home: FC = () => {
                     <Button>Popular</Button>
                 </Space>
             </Container>
-            <Container flex wrap rowGap={32} className={styles.featured}>
-                {featuredBooks}
-            </Container>
+            <Products
+                className={styles.featured}
+                products={(dataRecommend?.recommendProducts as ProductEntity[])}
+            />
         </>
     )
 

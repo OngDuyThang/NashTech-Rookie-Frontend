@@ -1,0 +1,13 @@
+.root {
+    :global(.ant-select-selector) {
+        box-shadow: none !important;
+    }
+    
+    :global(.ant-select-selection-item) {
+        color: #fff !important;
+    }
+
+    :global(.ant-select-arrow) {
+        color: #fff !important;
+    }
+}
