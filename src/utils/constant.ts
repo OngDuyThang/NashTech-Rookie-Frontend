@@ -22,3 +22,16 @@ export enum PAGINATION {
     MIN_LIMIT = 1,
     MAX_LIMIT = 20
 }
+
+export enum STAR {
+    ONE = 1,
+    TWO = 2,
+    THREE = 3,
+    FOUR = 4,
+    FIVE = 5
+}
+
+export enum REVIEW_SORT {
+    DATE_ASC = 'DATE_ASC',
+    DATE_DESC = 'DATE_DESC'
+}

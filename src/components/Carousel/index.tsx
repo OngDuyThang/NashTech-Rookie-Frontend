@@ -60,7 +60,7 @@ const Carousel: FC<CarouselProps> = ({
     arrows = true,
     autoplay = false,
     dots = false,
-    infinite = true,
+    infinite = false,
 }) => {
     const settings: Settings = {
         dots,

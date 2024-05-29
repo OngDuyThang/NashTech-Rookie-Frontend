@@ -4,7 +4,7 @@ import { type FC } from 'react'
 import styles from './index.module.scss'
 import { Space } from 'antd'
 import { useQuery } from '@apollo/client'
-import { getPromotionProducts, getRecommendProducts } from 'graphql/product'
+import { GET_PROMOTION_PRODUCTS, GET_RECOMMEND_PRODUCTS } from 'graphql/product'
 import { ProductEntity } from '__generated__/graphql'
 
 const Loading = (
@@ -14,8 +14,8 @@ const Loading = (
 )
 
 const Home: FC = () => {
-    const { data: dataPromotion } = useQuery(getPromotionProducts)
-    const { data: dataRecommend } = useQuery(getRecommendProducts)
+    const { data: dataPromotion } = useQuery(GET_PROMOTION_PRODUCTS)
+    const { data: dataRecommend } = useQuery(GET_RECOMMEND_PRODUCTS)
 
     const renderPromotions = (dataPromotion?.promotionProducts as ProductEntity[])?.map((product, index) => (
         <Div key={index}>

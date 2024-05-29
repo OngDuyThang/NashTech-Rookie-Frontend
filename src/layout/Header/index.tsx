@@ -7,12 +7,32 @@ import { AntdHeader } from "layout"
 import { useAppSelector } from "hooks"
 import { useRouter } from "next/router"
 import Link from "next/link"
+import { PAGINATION, PRODUCT_SORT } from "utils/constant"
+import { TQueryState } from "types/query"
 
-const navLinks: { title: string, path: string }[] = [
-    { title: 'Home', path: '/home' },
-    { title: 'Shop', path: '/shop' },
-    { title: 'About', path: '/about' },
-    { title: 'Cart', path: '/cart' }
+const navLinks: { title: string, url: any }[] = [
+    {
+        title: 'Home',
+        url: { pathname: '/home' }
+    },
+    {
+        title: 'Shop',
+        url: {
+            pathname: '/shop', query: {
+                page: PAGINATION.DEFAULT_PAGE,
+                limit: PAGINATION.DEFAULT_LIMIT,
+                sort: PRODUCT_SORT.ON_SALE
+            } as TQueryState
+        }
+    },
+    {
+        title: 'About',
+        url: { pathname: '/about' }
+    },
+    {
+        title: 'Cart',
+        url: { pathname: '/cart' }
+    },
 ]
 
 interface HeaderProps {
@@ -30,7 +50,8 @@ const Header: FC<HeaderProps> = ({
         <Link
             key={index}
             href={{
-                pathname: link.path,
+                pathname: link.url.pathname,
+                query: link.url?.query
             }}>{link.title}
         </Link>
     )

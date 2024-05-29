@@ -1,4 +1,6 @@
+import clsx from 'clsx'
 import { Container, Spin } from 'components'
+import { includes, some } from 'lodash'
 import { useRouter } from 'next/router'
 import { useState, type FC, useEffect } from 'react'
 
@@ -34,6 +36,10 @@ const LoadingScreen: FC<IProps> = ({
             flex
             justify='center'
             align='center'
+            style={
+                some(Object.keys(router.query), item => includes(['page', 'limit', 'sort', 'rating'], item))
+                    ? { display: 'none' } : undefined
+            }
         >
             <Spin size='large' />
         </Container>

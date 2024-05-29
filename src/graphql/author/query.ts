@@ -1,26 +1,19 @@
 import gql from "graphql-tag";
 
-export const GET_CATEGORIES = gql`
-query Categories {
-    categories {
+export const GET_AUTHORS = gql`
+query Authors {
+    authors {
         id
-        name
-        parent_id
-        parent {
-            id
-            name
-            parent_id
-        }
+        pen_name
     }
 }
 `;
 
-export const GET_CATEGORY = gql`
-query Category($id: String!, $limit: Int, $page: Int, $sort: String) {
-    category(id: $id) {
+export const GET_AUTHOR = gql`
+query Author($id: String!, $limit: Int, $page: Int, $sort: String) {
+    author(id: $id) {
         id
-        name
-        parent_id
+        pen_name
         products(limit: $limit, page: $page, sort: $sort) {
             limit
             page

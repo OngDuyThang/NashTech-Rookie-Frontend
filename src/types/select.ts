@@ -6,5 +6,5 @@ export type TOption = {
     icon?: ReactNode
 }
 
-export type TSelectProps = 'children' | 'onChange' | 'defaultValue' | 'suffixIcon'
+export type TSelectProps = 'children' | 'onChange' | 'defaultValue'
 export type TOptionProps = 'children' | 'value'

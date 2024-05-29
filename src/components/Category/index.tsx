@@ -4,6 +4,7 @@ import {
   ConfigProvider as AntdConfigProvider
 } from 'antd'
 import { type FC } from 'react'
+import { FaCaretDown } from 'react-icons/fa'
 import { TCategoryProps } from 'types/category'
 import { COLOR } from 'utils/constant'
 
@@ -21,7 +22,9 @@ const Category: FC<CategoryProps> = ({
   allowClear = true,
   treeDefaultExpandAll = true,
   popupMatchSelectWidth = false,
-  placement = 'bottomLeft'
+  placement = 'bottomLeft',
+  suffixIcon = <FaCaretDown />,
+  ...props
 }) => {
   return (
     <AntdConfigProvider theme={{
@@ -41,7 +44,8 @@ const Category: FC<CategoryProps> = ({
           allowClear,
           treeDefaultExpandAll,
           popupMatchSelectWidth,
-          placement
+          placement,
+          ...props
         }}
         dropdownStyle={{ maxHeight: 400, overflow: 'auto' }}
       />

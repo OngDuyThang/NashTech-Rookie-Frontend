@@ -9,6 +9,7 @@ import {
 import { OptionProps as AntdOptionProps } from "antd/es/select"
 import { TSelectProps, TOptionProps } from "types/select"
 import { COLOR } from "utils/constant"
+import { FaCaretDown } from "react-icons/fa"
 
 const { Option: AntdOption } = AntdSelect
 
@@ -29,14 +30,17 @@ export const Option: FC<OptionProps> = ({
 
 interface SelectProps extends
     Pick<Required<AntdSelectProps>, TSelectProps>,
-    Omit<AntdSelectProps, TSelectProps> {}
+    Omit<AntdSelectProps, TSelectProps> {
+    selectorBg?: string
+}
 
 export const Select: FC<SelectProps> = ({
     className,
     children,
     onChange,
     defaultValue,
-    suffixIcon,
+    suffixIcon = <FaCaretDown />,
+    selectorBg = COLOR.PRIMARY_BUTTON,
     ...props
 }) => {
     return (
@@ -46,7 +50,7 @@ export const Select: FC<SelectProps> = ({
             },
             components: {
                 Select: {
-                    selectorBg: COLOR.PRIMARY_BUTTON
+                    selectorBg
                 }
             }
         }}>

@@ -1,11 +1,27 @@
 .root {
     .body {
         padding: 32px 16px;
+        padding-bottom: calc(16px + 48px);
+        position: relative;
 
         .category {
             border: 1px solid #ccc;
             padding: 16px;
             border-radius: 6px;
+        }
+
+        .author {
+            :global(.ant-select-selector) {
+                box-shadow: none !important;
+            }
+            
+            :global(.ant-select-selection-item) {
+                color: var(--black-text) !important;
+            }
+        
+            :global(.ant-select-arrow) {
+                color: var(--black-text) !important;
+            }
         }
     }
 }

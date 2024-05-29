@@ -3,7 +3,7 @@ import styles from './index.module.scss'
 import clsx from "clsx";
 import { Div } from "components";
 
-type percen = '100' | '20' | '40' | '60' | '80' | '25' | '50' | '75' | '33' | '66' | '15' | '85' | '10' | '90'
+type percen = '100' | '20' | '40' | '60' | '80' | '25' | '50' | '75' | '33' | '66' | '15' | '85' | '10' | '90' | '70' | '30'
 type layout = 'start' | 'center' | 'end'
 type justify = 'between' | 'evenly' | 'around'
 type direction = 'row' | 'column' | 'row-reverse' | 'column-reverse'
