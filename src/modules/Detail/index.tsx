@@ -5,10 +5,10 @@ import styles from './index.module.scss'
 import { Space } from 'antd'
 import { PAGINATION, REVIEW_SORT, STAR } from 'utils/constant'
 import { FaPlus, FaMinus } from "react-icons/fa";
-import { Item } from 'components/Form'
-import { useLazyQuery } from '@apollo/client'
-import { GET_PRODUCT_BY_ID } from 'graphql/review'
-import { ProductEntity, ReviewList } from '__generated__/graphql'
+import { Item, useForm } from 'components/Form'
+import { useLazyQuery, useMutation } from '@apollo/client'
+import { CREATE_REVIEW, GET_PRODUCT_BY_ID } from 'graphql/review'
+import { CreateReviewDto, ProductEntity, ReviewList } from '__generated__/graphql'
 import { cloneDeep, round, sum } from 'lodash'
 import moment from 'moment'
 import { useRouterReviewQuery } from 'hooks'
@@ -43,10 +43,12 @@ const Detail: FC = () => {
     const toast = useContext(ToastContext) as ToastInstance
     const [router, query] = useRouterReviewQuery()
     const [getProduct] = useLazyQuery(GET_PRODUCT_BY_ID)
+    const [mutate] = useMutation(CREATE_REVIEW)
 
     const [star, setStar] = useState<STAR>(STAR.FIVE)
     const [product, setProduct] = useState<ProductEntity>()
     const [reviews, setReviews] = useState<ReviewList>()
+    const [form] = useForm()
 
     useEffect(() => {
         if (isFirstRender.current) {
@@ -97,6 +99,24 @@ const Detail: FC = () => {
         const reviews = product?.reviews as ReviewList
         setReviews(cloneDeep(reviews))
         if (error) toast.error({ message: error.graphQLErrors[0]?.message })
+    }
+
+    const handleFinish = async (value: any) => {
+        const { title, description, rating } = value
+        const createReviewDto: CreateReviewDto = {
+            title,
+            description,
+            rating,
+            product_id: product?.id || '',
+        }
+
+        try {
+            await mutate({ variables: { review: createReviewDto } })
+            form.resetFields()
+            toast.success({ message: 'Review created successfully' })
+        } catch (e) {
+            toast.error({ message: String(e) })
+        }
     }
 
     const ProductDetail = (
@@ -247,7 +267,12 @@ const Detail: FC = () => {
             <Div className={styles.head}>
                 <Text tag='span' fontSize='1.25rem' fontWeight={600}>Write a Review</Text>
             </Div>
-            <Form layout='vertical' className='p-8'>
+            <Form
+                layout='vertical' className='p-8'
+                form={form}
+                onFinish={handleFinish}
+                autoComplete="off"
+            >
                 <Item
                     label='Add a title'
                     name='title'
