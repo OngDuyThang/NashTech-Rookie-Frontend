@@ -12,13 +12,15 @@ const Loading = (
 )
 
 interface ProductsProps {
-    products: ProductEntity[] | null | undefined,
-    className?: string
+    products: ProductEntity[] | null | undefined;
+    className?: string;
+    size?: 'default' | 'small'
 }
 
 const Products: FC<ProductsProps> = ({
     products,
-    className
+    className,
+    size = 'default'
 }) => {
     const render = products?.map(product => (
         <Div className={styles['product-wrapper']}>
@@ -27,7 +29,11 @@ const Products: FC<ProductsProps> = ({
     ))
 
     return (
-        <Container flex wrap rowGap={32} className={clsx(styles.root, className)}>
+        <Container flex wrap rowGap={32} className={clsx(
+            styles.root,
+            size == 'small' && styles.small,
+            className
+        )}>
             {products ? render : Loading}
         </Container>
     )

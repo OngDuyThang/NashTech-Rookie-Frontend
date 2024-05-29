@@ -3,6 +3,8 @@ import { type FC } from 'react'
 import styles from './index.module.scss'
 import clsx from 'clsx'
 import { ProductEntity } from '__generated__/graphql'
+import { useRouter } from 'next/router'
+import { round } from 'lodash'
 
 interface ProductProps {
     product: ProductEntity
@@ -11,6 +13,7 @@ interface ProductProps {
 const Product: FC<ProductProps> = ({
     product
 }) => {
+    const router = useRouter()
     const {
         title,
         author,
@@ -21,7 +24,17 @@ const Product: FC<ProductProps> = ({
 
     return (
         <Container flex direct='column' justify='center' align='start' className={styles.root}>
-            <Div className={styles.image}>
+            <Div
+                className={styles.image}
+                onClick={() => {
+                    router.push({
+                        pathname: '/product/[slug]',
+                        query: {
+                            slug: product.id
+                        }
+                    })
+                }}
+            >
                 <Image
                     src={image || ''}
                     alt='product image'
@@ -38,7 +51,7 @@ const Product: FC<ProductProps> = ({
                         styles.hide
                 }>{price}$</Text>
                 <Text>
-                    {price * (promotion?.discount_percent ? promotion.discount_percent / 100 : 1)}$
+                    {promotion?.discount_percent ? round(product?.price - (product?.price * promotion?.discount_percent / 100), 2) : product?.price}$
                 </Text>
             </Div>
         </Container>

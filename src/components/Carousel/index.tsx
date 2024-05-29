@@ -67,6 +67,7 @@ const Carousel: FC<CarouselProps> = ({
         infinite,
         speed: 500,
         autoplay,
+        slidesToShow: 5,
         slidesToScroll: 1,
         initialSlide: 0,
         responsive: responsives,

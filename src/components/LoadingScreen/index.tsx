@@ -37,7 +37,7 @@ const LoadingScreen: FC<IProps> = ({
             justify='center'
             align='center'
             style={
-                some(Object.keys(router.query), item => includes(['page', 'limit', 'sort', 'rating'], item))
+                some(Object.keys(router.query), item => includes(['page', 'limit', 'sort', 'star'], item))
                     ? { display: 'none' } : undefined
             }
         >

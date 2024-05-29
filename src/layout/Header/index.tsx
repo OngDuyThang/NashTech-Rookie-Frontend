@@ -8,7 +8,7 @@ import { useAppSelector } from "hooks"
 import { useRouter } from "next/router"
 import Link from "next/link"
 import { PAGINATION, PRODUCT_SORT } from "utils/constant"
-import { TQueryState } from "types/query"
+import { TProductQueryState } from "types/query"
 
 const navLinks: { title: string, url: any }[] = [
     {
@@ -17,13 +17,7 @@ const navLinks: { title: string, url: any }[] = [
     },
     {
         title: 'Shop',
-        url: {
-            pathname: '/shop', query: {
-                page: PAGINATION.DEFAULT_PAGE,
-                limit: PAGINATION.DEFAULT_LIMIT,
-                sort: PRODUCT_SORT.ON_SALE
-            } as TQueryState
-        }
+        url: { pathname: '/shop' }
     },
     {
         title: 'About',

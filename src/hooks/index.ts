@@ -1,2 +1,2 @@
 export { useAppSelector, useAppDispatch } from './useRedux'
-export { useRouterQuery } from './useRouterQuery'
+export { useRouterProductQuery, useRouterReviewQuery } from './useRouterQuery'

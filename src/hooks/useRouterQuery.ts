@@ -1,14 +1,30 @@
 import { NextRouter, useRouter } from "next/router"
-import { TQueryState } from "types/query"
-import { PAGINATION, PRODUCT_SORT } from "utils/constant"
+import { TProductQueryState, TReviewQueryState } from "types/query"
+import { PAGINATION, PRODUCT_SORT, REVIEW_SORT, STAR } from "utils/constant"
 
-export const useRouterQuery = (): [NextRouter, TQueryState] => {
+export const useRouterProductQuery = (): [NextRouter, TProductQueryState] => {
     const router = useRouter()
 
     const query = {
         page: Number(router.query?.page) || PAGINATION.DEFAULT_PAGE,
         limit: Number(router.query?.limit) || PAGINATION.DEFAULT_LIMIT,
         sort: router.query?.sort as PRODUCT_SORT || PRODUCT_SORT.ON_SALE
+    }
+
+    return [
+        router,
+        query
+    ]
+}
+
+export const useRouterReviewQuery = (): [NextRouter, TReviewQueryState] => {
+    const router = useRouter()
+
+    const query = {
+        page: Number(router.query?.page) || PAGINATION.DEFAULT_PAGE,
+        limit: Number(router.query?.limit) || PAGINATION.DEFAULT_LIMIT,
+        sort: router.query?.sort as REVIEW_SORT || REVIEW_SORT.DATE_DESC,
+        star: Number(router.query?.star) as STAR || STAR.FIVE
     }
 
     return [
