@@ -7,7 +7,7 @@ import { AntdHeader } from "layout"
 import { useAppSelector } from "hooks"
 import { useRouter } from "next/router"
 import Link from "next/link"
-import { PAGINATION, PRODUCT_SORT } from "utils/constant"
+import { API_HOST, API_METHOD, PAGINATION, PRODUCT_SORT } from "utils/constant"
 import { TProductQueryState } from "types/query"
 
 const navLinks: { title: string, url: any }[] = [
@@ -71,7 +71,7 @@ const Header: FC<HeaderProps> = ({
             className={styles.right}>
             {Links}
             {isSession ? <User /> :
-                <a href='https://www.google.com'>
+                <a href={`${API_METHOD}://${API_HOST}:3000/auth/login`}>
                     <Button>Login</Button>
                 </a>
             }

@@ -1,8 +1,5 @@
 export type TTokenResponse = {
-    [AUTH.ACCESS_TOKEN]: string,
-    username: string,
-    email: string,
-    picture: string,
+    [AUTH.ACCESS_TOKEN]: string
 }
 
 export enum AUTH {

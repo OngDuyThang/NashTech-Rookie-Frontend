@@ -1,11 +1,14 @@
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
 import { AUTH, TTokenResponse } from "types/auth";
+import { jwtDecode } from "jwt-decode";
 
 export type TUserState = TTokenResponse & {
-    isSession: boolean
+    username: string,
+    email: string,
+    picture: string
 }
 
-const initialState: TUserState = {
+const initialState: TUserState & { isSession: boolean } = {
     [AUTH.ACCESS_TOKEN]: '',
     username: '',
     email: '',
@@ -21,7 +24,20 @@ const userSlice = createSlice({
             _state,
             action: PayloadAction<TTokenResponse>
         ) {
-            return { ...action.payload, isSession: true }
+            const token = action.payload?.[AUTH.ACCESS_TOKEN]
+            if (!token) return
+
+            const payload = jwtDecode<TUserState>(token)
+            return {
+                access_token: token,
+                username: payload?.username,
+                email: payload?.email,
+                picture: payload?.picture,
+                isSession: true,
+            }
+        },
+        logoutAction() {
+            return initialState
         },
         setAccessToken(state, action: PayloadAction<string>) {
             state[AUTH.ACCESS_TOKEN] = action.payload
@@ -31,6 +47,7 @@ const userSlice = createSlice({
 
 export const {
     loginAction,
+    logoutAction,
     setAccessToken
 } = userSlice.actions
 export default userSlice.reducer

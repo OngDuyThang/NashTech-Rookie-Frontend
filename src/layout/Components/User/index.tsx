@@ -1,10 +1,11 @@
 import { Div, Image, Dropdown } from 'components'
-import { useAppSelector } from 'hooks';
+import { useAppDispatch, useAppSelector } from 'hooks';
 import { capitalize } from 'lodash';
 import { type FC } from 'react'
 import { FaUser } from 'react-icons/fa';
 import { MdMail } from "react-icons/md";
 import { PiSignOutBold } from "react-icons/pi";
+import { logoutAction } from 'store/user/slice';
 import { TDropdownItems } from 'types/dropdown';
 import { userLogout } from 'utils/helper';
 
@@ -26,7 +27,9 @@ const User: FC = () => {
             label: capitalize('log out'),
             icon: <PiSignOutBold className={iconCss} />,
             key: '3',
-            onClick: () => { userLogout() }
+            onClick: () => {
+                userLogout()
+            }
         },
     ];
 

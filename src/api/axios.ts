@@ -1,13 +1,11 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios";
-import { API_URL } from "utils/constant";
 import { TApiResponse } from "types/api";
+import { AUTH } from "types/auth";
+import { API_HOST, API_METHOD } from "utils/constant";
 import { getAccessToken, autoLogout, replaceAccessToken, isSession } from "utils/helper";
-import http from 'http';
-import https from 'https';
 
 // axios instance for client
 export const axiosClient = axios.create({
-    baseURL: API_URL,
     withCredentials: true
 });
 
@@ -17,6 +15,7 @@ axiosClient.interceptors.request.use(
         if (accessToken) {
             config.headers.Authorization = `Bearer ${accessToken}`
         }
+
         return config;
     },
     function (e: AxiosError) {
@@ -26,13 +25,6 @@ axiosClient.interceptors.request.use(
 
 axiosClient.interceptors.response.use(
     function (res: AxiosResponse<TApiResponse>) {
-        const { data, statusText, status } = res
-
-        res.data = {
-            data,
-            message: statusText,
-            statusCode: status
-        }
         return res
     },
     async function (e: AxiosError<TApiResponse>) {
@@ -48,10 +40,14 @@ axiosClient.interceptors.response.use(
             if (statusCode === 401 && !url.includes('refresh')) {
                 if (!isSession()) return
 
-                const res = await axiosClient.post('/auth/refresh')
+                const url = `${API_METHOD}://${API_HOST}:3000/auth/refresh`
+                const res = await axiosClient.post(url, {
+                    [AUTH.ACCESS_TOKEN]: getAccessToken()
+                })
+
                 if (res) {
-                    const { data: { data: accessToken } } = res
-                    replaceAccessToken(accessToken)
+                    const { data: { data } } = res
+                    replaceAccessToken(data?.[AUTH.ACCESS_TOKEN])
                     return axiosClient(originalConfig as AxiosRequestConfig)
                 }
             }
@@ -79,40 +75,4 @@ axiosClient.interceptors.response.use(
             }
         }
     },
-);
-
-// axios instance for server
-export const axiosServer = axios.create({
-    baseURL: API_URL,
-    timeout: 5 * 60 * 1000,
-    httpsAgent: new https.Agent({
-        maxSockets: 160,
-        maxFreeSockets: 160,
-        timeout: 60000,
-        keepAliveMsecs: 60000,
-    }),
-    httpAgent: new http.Agent({
-        maxSockets: 160,
-        maxFreeSockets: 160,
-        timeout: 60000,
-        keepAliveMsecs: 60000,
-    })
-});
-
-axiosServer.interceptors.request.use(
-    async function (config: InternalAxiosRequestConfig) {
-        return config;
-    },
-    function (e: AxiosError) {
-        console.log(e)
-    }
-);
-
-axiosServer.interceptors.response.use(
-    function (res: AxiosResponse) {
-        return res;
-    },
-    function (e: AxiosError) {
-        console.log(e)
-    }
 );

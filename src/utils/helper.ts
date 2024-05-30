@@ -3,6 +3,7 @@ import { API_HOST, API_METHOD } from "./constant"
 import { CategoryEntity } from "__generated__/graphql"
 import { TCategoryTreeNode } from "types/category"
 import { isEmpty } from "lodash"
+import { AUTH } from "types/auth"
 
 export const getRoot = () => {
     if (typeof window !== 'undefined') {
@@ -22,13 +23,13 @@ export const getCurrentUser = () => {
 
 export const getAccessToken = (): string => {
     const user = getCurrentUser()
-    return user?.accessToken ? user.accessToken : ''
+    return user?.[AUTH.ACCESS_TOKEN] ? user[AUTH.ACCESS_TOKEN] : ''
 }
 
 export const replaceAccessToken = (newToken: string) => {
     const user = getCurrentUser()
     if (user) {
-        user.accessToken = newToken
+        user[AUTH.ACCESS_TOKEN] = newToken
         const root = getRoot()
         if (root && JSON.parse(root)?.user) {
             const newRoot = JSON.parse(root)
@@ -51,8 +52,8 @@ export const autoLogout = async () => {
 export const userLogout = async () => {
     if (typeof window !== 'undefined') {
         await logout()
-        localStorage.clear()
         window.location.href = window.location.href
+        localStorage.clear()
     }
 }
 
