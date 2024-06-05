@@ -86,7 +86,7 @@ const Shop: FC = () => {
                 setProducts(products as ProductList)
 
                 const error = errorCats || errorCat
-                if (error) toast.error({ message: error.graphQLErrors[0]?.message })
+                if (error) toast.error({ message: error?.graphQLErrors[0]?.message })
 
                 isFirstRender.current = false
             })()
@@ -105,17 +105,17 @@ const Shop: FC = () => {
             case !!categoryId:
                 const { data: dataCat, error: errorCat } = await getCat({ variables: { id: categoryId, ...newQuery } })
                 setProducts((dataCat?.category as CategoryEntity)?.products as ProductList)
-                if (errorCat) toast.error({ message: errorCat.graphQLErrors[0]?.message })
+                if (errorCat) toast.error({ message: errorCat?.graphQLErrors[0]?.message })
                 break;
             case !!authorId:
                 const { data: dataAuthor, error: errorAuthor } = await getAuthor({ variables: { id: authorId, ...newQuery } })
                 setProducts((dataAuthor?.author as AuthorEntity)?.products as ProductList)
-                if (errorAuthor) toast.error({ message: errorAuthor.graphQLErrors[0]?.message })
+                if (errorAuthor) toast.error({ message: errorAuthor?.graphQLErrors[0]?.message })
                 break;
             case !!star:
                 const { data: dataRate, error: errorRate } = await getByRate({ variables: { rating: star, ...newQuery } })
                 setProducts(dataRate?.productsByRating as ProductList)
-                if (errorRate) toast.error({ message: errorRate.graphQLErrors[0]?.message })
+                if (errorRate) toast.error({ message: errorRate?.graphQLErrors[0]?.message })
                 break;
         }
     }
@@ -127,7 +127,7 @@ const Shop: FC = () => {
         setCategoryId(id)
         setAuthorId('')
         setStar(0)
-        if (errorCat) toast.error({ message: errorCat.graphQLErrors[0]?.message })
+        if (errorCat) toast.error({ message: errorCat?.graphQLErrors[0]?.message })
     }
 
     const handleAuthor = async (id: string) => {
@@ -137,7 +137,7 @@ const Shop: FC = () => {
         setCategoryId('')
         setAuthorId(id)
         setStar(0)
-        if (errorAuthor) toast.error({ message: errorAuthor.graphQLErrors[0]?.message })
+        if (errorAuthor) toast.error({ message: errorAuthor?.graphQLErrors[0]?.message })
     }
 
     const handleStar = async (star: STAR) => {
@@ -147,7 +147,7 @@ const Shop: FC = () => {
         setCategoryId('')
         setAuthorId('')
         setStar(star)
-        if (errorRate) toast.error({ message: errorRate.graphQLErrors[0]?.message })
+        if (errorRate) toast.error({ message: errorRate?.graphQLErrors[0]?.message })
     }
 
     const ProductCategory = (

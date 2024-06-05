@@ -1,32 +1,30 @@
-import { useState, type FC } from "react"
+import { useContext, useEffect, useState, type FC } from "react"
 import styles from './index.module.scss'
 import { User, OpenSider } from "layout/Components"
 import { Image, Div, Container, Drawer, Button } from "components"
 import clsx from "clsx"
-import { AntdHeader } from "layout"
-import { useAppSelector } from "hooks"
+import { AntdHeader, ToastContext, ToastInstance } from "layout"
+import { useAppDispatch, useAppSelector } from "hooks"
 import { useRouter } from "next/router"
 import Link from "next/link"
-import { API_HOST, API_METHOD, PAGINATION, PRODUCT_SORT } from "utils/constant"
-import { TProductQueryState } from "types/query"
+import { API_HOST, API_METHOD, SERVICE } from "utils/constant"
+import { ApolloClient, InMemoryCache, useLazyQuery, useQuery } from "@apollo/client"
+import { GET_USER_CART_COUNT } from "graphql/cart"
+import { setUserCartCount } from "store/cart/slice"
 
-const navLinks: { title: string, url: any }[] = [
+const navLinks = [
     {
         title: 'Home',
-        url: { pathname: '/home' }
+        pathname: '/home'
     },
     {
         title: 'Shop',
-        url: { pathname: '/shop' }
+        pathname: '/shop'
     },
     {
         title: 'About',
-        url: { pathname: '/about' }
-    },
-    {
-        title: 'Cart',
-        url: { pathname: '/cart' }
-    },
+        pathname: '/about'
+    }
 ]
 
 interface HeaderProps {
@@ -36,17 +34,32 @@ interface HeaderProps {
 const Header: FC<HeaderProps> = ({
     className
 }) => {
+    const toast = useContext(ToastContext) as ToastInstance
+    const dispatch = useAppDispatch()
     const { isSession } = useAppSelector(state => state.user)
+    const { count } = useAppSelector(state => state.cart)
     const router = useRouter()
+
+    const [getUserCartCount] = useLazyQuery(GET_USER_CART_COUNT)
     const [open, setOpen] = useState<boolean>(false)
+
+    useEffect(() => {
+        if (count == undefined && isSession) {
+            (async () => {
+                const { data, error } = await getUserCartCount({ context: { service: SERVICE.CART } })
+                if (data?.getUserCartCount) {
+                    dispatch(setUserCartCount(data?.getUserCartCount))
+                }
+                if (error) toast.error({ message: error?.graphQLErrors[0]?.message })
+            })()
+        }
+    }, [])
 
     const Links = navLinks.map((link, index) =>
         <Link
             key={index}
-            href={{
-                pathname: link.url.pathname,
-                query: link.url?.query
-            }}>{link.title}
+            href={{ pathname: link.pathname }}>
+            {link.title}
         </Link>
     )
 
@@ -70,6 +83,7 @@ const Header: FC<HeaderProps> = ({
         <Container width="50" height="100" flex direct="row" gap='16' align="center" justify="end"
             className={styles.right}>
             {Links}
+            <Link href={{ pathname: '/cart' }}>Cart ({count})</Link>
             {isSession ? <User /> :
                 <a href={`${API_METHOD}://${API_HOST}:3000/auth/login`}>
                     <Button>Login</Button>

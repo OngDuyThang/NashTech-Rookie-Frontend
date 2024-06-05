@@ -6,3 +6,9 @@ export interface TApiResponse<T = unknown> {
     limit?: number,
     total?: number
 }
+
+export interface TGqlErrorResponse {
+    message: string,
+    statusCode: number,
+    detail?: string,
+}

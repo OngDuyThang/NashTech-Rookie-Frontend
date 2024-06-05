@@ -1,19 +1,21 @@
-import { Button, Container, Div, Form, Image, Input, Option, Pagination, Select, Text, TextArea } from 'components'
+import { Button, Container, Div, Form, Image, Input, LoadingScreen, Option, Pagination, Select, Text, TextArea } from 'components'
 import { Title } from 'modules/Components'
 import { useContext, useEffect, useRef, useState, type FC } from 'react'
 import styles from './index.module.scss'
 import { Space } from 'antd'
-import { PAGINATION, REVIEW_SORT, STAR } from 'utils/constant'
+import { PAGINATION, REVIEW_SORT, SERVICE, STAR } from 'utils/constant'
 import { FaPlus, FaMinus } from "react-icons/fa";
 import { Item, useForm } from 'components/Form'
 import { useLazyQuery, useMutation } from '@apollo/client'
 import { CREATE_REVIEW, GET_PRODUCT_BY_ID } from 'graphql/review'
-import { CreateReviewDto, ProductEntity, ReviewList } from '__generated__/graphql'
+import { CreateCartItemDto, CreateReviewDto, ProductEntity, ReviewEntity, ReviewList } from '__generated__/graphql'
 import { cloneDeep, round, sum } from 'lodash'
 import moment from 'moment'
-import { useRouterReviewQuery } from 'hooks'
+import { useAppDispatch, useRouterReviewQuery } from 'hooks'
 import { ToastContext, ToastInstance } from 'layout'
 import { TReviewQueryState } from 'types/query'
+import { ADD_TO_USER_CART, GET_USER_CART_COUNT } from 'graphql/cart'
+import { setUserCartCount } from 'store/cart/slice'
 
 const stars = [
     {
@@ -39,13 +41,17 @@ const stars = [
 ]
 
 const Detail: FC = () => {
+    const dispatch = useAppDispatch()
     const isFirstRender = useRef(true)
     const toast = useContext(ToastContext) as ToastInstance
     const [router, query] = useRouterReviewQuery()
     const [getProduct] = useLazyQuery(GET_PRODUCT_BY_ID)
-    const [mutate] = useMutation(CREATE_REVIEW)
+    const [createReview, { loading }] = useMutation(CREATE_REVIEW)
+    const [addToCart] = useMutation(ADD_TO_USER_CART)
+    const [getUserCartCount] = useLazyQuery(GET_USER_CART_COUNT)
 
     const [star, setStar] = useState<STAR>(STAR.FIVE)
+    const [quantity, setQuantity] = useState<number>(1)
     const [product, setProduct] = useState<ProductEntity>()
     const [reviews, setReviews] = useState<ReviewList>()
     const [form] = useForm()
@@ -74,7 +80,7 @@ const Detail: FC = () => {
 
                 const reviews = product?.reviews as ReviewList
                 setReviews(cloneDeep(reviews))
-                if (error) toast.error({ message: error.graphQLErrors[0]?.message })
+                if (error) toast.error({ message: error?.graphQLErrors[0]?.message })
 
                 isFirstRender.current = false
             })()
@@ -98,7 +104,7 @@ const Detail: FC = () => {
 
         const reviews = product?.reviews as ReviewList
         setReviews(cloneDeep(reviews))
-        if (error) toast.error({ message: error.graphQLErrors[0]?.message })
+        if (error) toast.error({ message: error?.graphQLErrors[0]?.message })
     }
 
     const handleFinish = async (value: any) => {
@@ -106,14 +112,50 @@ const Detail: FC = () => {
         const createReviewDto: CreateReviewDto = {
             title,
             description,
-            rating,
+            rating: rating || STAR.FIVE,
             product_id: product?.id || '',
         }
 
         try {
-            await mutate({ variables: { review: createReviewDto } })
-            form.resetFields()
+            await createReview({ variables: { review: createReviewDto } })
+
             toast.success({ message: 'Review created successfully' })
+            form.resetFields()
+
+            const { data } = await getProduct({
+                variables: { id: router.query?.slug, ...query },
+                fetchPolicy: 'network-only'
+            })
+            const product = data?.product as ProductEntity
+            setProduct(cloneDeep(product))
+
+            const reviews = product?.reviews as ReviewList
+            setReviews(cloneDeep(reviews))
+        } catch (e) {
+            toast.error({ message: String(e) })
+        }
+    }
+
+    const handleAddToCart = async () => {
+        const createItemDto: CreateCartItemDto = {
+            product_id: product?.id || '',
+            quantity
+        }
+        try {
+            await addToCart({
+                variables: {
+                    item: createItemDto
+                },
+                context: {
+                    service: SERVICE.CART
+                }
+            })
+            toast.success({ message: 'Product added to cart successfully' })
+
+            const { data } = await getUserCartCount({ context: { service: SERVICE.CART } })
+            if (data?.getUserCartCount) {
+                dispatch(setUserCartCount(data?.getUserCartCount))
+            }
         } catch (e) {
             toast.error({ message: String(e) })
         }
@@ -159,14 +201,15 @@ const Detail: FC = () => {
             </Div>
             <Container flex direct='column' justify='center' align='center' gap={32} className='p-8'>
                 <Div className={styles.quantity}>
-                    <FaMinus />
-                    <Text tag='span' fontSize='1rem' fontWeight={500}>1</Text>
-                    <FaPlus />
+                    <FaMinus onClick={() => setQuantity(quantity > 1 ? quantity - 1 : 1)} className='cursor-pointer' />
+                    <Text tag='span' fontSize='1rem' fontWeight={500} userSelect='none'>{quantity}</Text>
+                    <FaPlus onClick={() => setQuantity(quantity + 1)} className='cursor-pointer' />
                 </Div>
                 <Button
                     className='w-full flex justify-center items-center py-5'
                     fontSize='1rem'
                     fontWeight={500}
+                    onClick={handleAddToCart}
                 >
                     Add to cart
                 </Button>
@@ -209,8 +252,8 @@ const Detail: FC = () => {
         <Container width='70' flex direct='column' justify='start' gap={24} className={styles.reviews}>
             <Container align='center'>
                 <Space size={8}>
-                    <Text tag='span' fontSize='1.25rem' fontWeight={500}>Customer Reviews</Text>
-                    <Text tag='span'>(Filtered by {query.star} star)</Text>
+                    <Text tag='span' fontSize='1.25rem' fontWeight={500} userSelect='none'>Customer Reviews</Text>
+                    <Text tag='span' userSelect='none'>(Filtered by {query.star} star)</Text>
                 </Space>
                 <Space size={16} className='float-right'>
                     <Select
@@ -292,12 +335,11 @@ const Detail: FC = () => {
                 <Item
                     label='Select a rating star'
                     name='rating'
-                    rules={[{ required: true, message: 'Please select a rating star!' }]}
                     validateTrigger='onBlur'
                 >
                     <Select
                         defaultValue={STAR.FIVE}
-                        value={''}
+                        value={star}
                         onChange={(value) => setStar(value)}
                         selectorBg='#fff'
                         className={styles.rating}
@@ -326,10 +368,12 @@ const Detail: FC = () => {
         </Container>
     )
 
+    if (loading) return <LoadingScreen />
+
     return (
         <Container className={styles.root}>
             <Title>
-                Category Name
+                {product?.category?.name}
             </Title>
             <Container flex direct='column' gap={32} className={styles.body}>
                 {Top}

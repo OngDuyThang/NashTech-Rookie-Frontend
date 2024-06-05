@@ -1,11 +1,14 @@
 import { Button, Carousel, Container, Div, Spin, Text } from 'components'
 import { Product, Products } from 'modules/Components'
-import { type FC } from 'react'
+import { useEffect, type FC } from 'react'
 import styles from './index.module.scss'
 import { Space } from 'antd'
 import { useQuery } from '@apollo/client'
 import { GET_PROMOTION_PRODUCTS, GET_RECOMMEND_PRODUCTS } from 'graphql/product'
 import { ProductEntity } from '__generated__/graphql'
+import { axiosClient } from 'api/axios'
+import { getAccessToken } from 'utils/helper'
+import { AUTH } from 'types/auth'
 
 const Loading = (
     <Div className='w-full h-32 flex justify-center items-center'>
@@ -14,8 +17,17 @@ const Loading = (
 )
 
 const Home: FC = () => {
-    const { data: dataPromotion } = useQuery(GET_PROMOTION_PRODUCTS)
+    const { data: dataPromotion, error } = useQuery(GET_PROMOTION_PRODUCTS)
     const { data: dataRecommend } = useQuery(GET_RECOMMEND_PRODUCTS)
+
+    // useEffect(() => {
+    //     (async () => {
+    //         const { data } = await axiosClient.post('http://localhost:3000/auth/refresh', {
+    //             [AUTH.ACCESS_TOKEN]: getAccessToken()
+    //         })
+    //         console.log(data)
+    //     })()
+    // }, [])
 
     const renderPromotions = (dataPromotion?.promotionProducts as ProductEntity[])?.map((product, index) => (
         <Div key={index}>

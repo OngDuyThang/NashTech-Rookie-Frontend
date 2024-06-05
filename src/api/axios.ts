@@ -1,4 +1,5 @@
 import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, InternalAxiosRequestConfig } from "axios";
+import { jwtDecode } from "jwt-decode";
 import { TApiResponse } from "types/api";
 import { AUTH } from "types/auth";
 import { API_HOST, API_METHOD } from "utils/constant";
@@ -37,22 +38,25 @@ axiosClient.interceptors.response.use(
         if (response) {
             const { data: { message, statusCode } } = response
 
-            if (statusCode === 401 && !url.includes('refresh')) {
-                if (!isSession()) return
+            if (statusCode == 401 && !url.includes('refresh') && isSession()) {
+                const accessToken = getAccessToken()
+                const payload = jwtDecode(accessToken)
 
-                const url = `${API_METHOD}://${API_HOST}:3000/auth/refresh`
-                const res = await axiosClient.post(url, {
-                    [AUTH.ACCESS_TOKEN]: getAccessToken()
-                })
+                if (accessToken && payload && Date.now() >= Number(payload?.exp) * 1000) {
+                    const url = `${API_METHOD}://${API_HOST}:3000/auth/refresh`
+                    const res = await axiosClient.post(url, {
+                        [AUTH.ACCESS_TOKEN]: accessToken
+                    })
 
-                if (res) {
-                    const { data: { data } } = res
-                    replaceAccessToken(data?.[AUTH.ACCESS_TOKEN])
-                    return axiosClient(originalConfig as AxiosRequestConfig)
+                    if (res) {
+                        const { data: { data } } = res
+                        replaceAccessToken(data?.[AUTH.ACCESS_TOKEN])
+                        return axiosClient(originalConfig as AxiosRequestConfig)
+                    }
                 }
             }
 
-            if (statusCode === 401 && url.includes('refresh')) {
+            if (statusCode == 401 && url.includes('refresh')) {
                 if (!isSession()) return
 
                 autoLogout()

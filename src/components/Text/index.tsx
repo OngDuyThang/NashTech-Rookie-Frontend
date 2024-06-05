@@ -17,6 +17,7 @@ interface TextProps {
     opacity?: string;
     children: ReactNode;
     cursor?: string;
+    userSelect?: string;
     style?: CSSProperties;
     onClick?: () => void
 }
@@ -35,6 +36,7 @@ const Text: FC<TextProps> = ({
     opacity,
     className,
     cursor,
+    userSelect,
     style,
     onClick
 }) => {
@@ -49,6 +51,7 @@ const Text: FC<TextProps> = ({
         fontStyle: fontStyle,
         opacity: opacity,
         cursor: cursor,
+        userSelect: userSelect,
         ...style,
     };
 

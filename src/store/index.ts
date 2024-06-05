@@ -10,8 +10,8 @@ import {
 } from 'redux-persist';
 import storage from 'redux-persist/lib/storage';
 
-// import systemReducer from './system/slice'
 import userReducer from './user/slice'
+import cartReducer from './cart/slice'
 
 const persistConfig = {
     key: 'root',
@@ -19,8 +19,8 @@ const persistConfig = {
     storage,
 }
 const rootReducer = combineReducers({
-    // system: systemReducer,
-    user: userReducer
+    user: userReducer,
+    cart: cartReducer
 })
 const persistedReducer = persistReducer(persistConfig, rootReducer)
 

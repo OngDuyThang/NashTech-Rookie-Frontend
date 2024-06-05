@@ -35,3 +35,9 @@ export enum REVIEW_SORT {
     DATE_ASC = 'DATE_ASC',
     DATE_DESC = 'DATE_DESC'
 }
+
+export enum SERVICE {
+    PRODUCT = 'PRODUCT',
+    CART = 'CART',
+    ORDER = 'ORDER'
+}

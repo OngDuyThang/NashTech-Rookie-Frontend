@@ -24,7 +24,7 @@ const Image: FC<ImageProps> = ({
         <Div className={clsx('w-full h-full relative overflow-hidden', className)}>
             {isLoading || isError ? <Skeleton type='thumbnail' /> : null}
             <NextImage
-                src={src}
+                src={src || ''}
                 alt={alt}
                 width={MAX_LIMIT_NUMBER}
                 height={MAX_LIMIT_NUMBER}

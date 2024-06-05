@@ -13,6 +13,10 @@ query Product($id: String!, $limit: Int, $page: Int, $sort: String, $star: Int) 
         rating
         ratings
         title
+        category {
+            id
+            name
+        }
         author {
             id
             pen_name

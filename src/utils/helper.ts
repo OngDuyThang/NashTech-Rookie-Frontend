@@ -1,5 +1,5 @@
 import { logout } from "api/auth"
-import { API_HOST, API_METHOD } from "./constant"
+import { API_HOST, API_METHOD, SERVICE } from "./constant"
 import { CategoryEntity } from "__generated__/graphql"
 import { TCategoryTreeNode } from "types/category"
 import { isEmpty } from "lodash"
@@ -43,6 +43,7 @@ export const replaceAccessToken = (newToken: string) => {
 
 export const autoLogout = async () => {
     if (typeof window !== 'undefined') {
+        await logout()
         alert('Your session has been expired, ready to sign out')
         window.location.href = window.location.href
         localStorage.clear()
@@ -65,12 +66,13 @@ export const isSession = (): boolean => {
     return false
 }
 
-export const getGqlEndpoint = (serviceName: 'product' | 'order' | 'cart') => {
+export const getGqlEndpoint = (serviceName: SERVICE) => {
     let port: number
     switch (serviceName) {
-        case 'product': port = 3001; break;
-        case 'cart': port = 3002; break;
-        case 'order': port = 3003; break;
+        case 'PRODUCT': port = 3001; break;
+        case 'CART': port = 3002; break;
+        case 'ORDER': port = 3003; break;
+        default: port = 3001; break;
     }
     return `${API_METHOD}://${API_HOST}:${port}/graphql`
 }
