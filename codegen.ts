@@ -9,7 +9,8 @@ const orderPort = process.env.NEXT_PUBLIC_API_ORDER_PORT
 const config: CodegenConfig = {
     schema: [
         'http://localhost:3001/graphql',
-        'http://localhost:3002/graphql'
+        'http://localhost:3002/graphql',
+        'http://localhost:3003/graphql'
     ],
     documents: ['src/**/*.ts', 'src/**/*.tsx'],
     generates: {

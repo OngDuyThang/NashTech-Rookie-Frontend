@@ -57,7 +57,7 @@ const Layout: FC<LayoutProps> = ({
                 <ToastContext.Provider value={api}>
                     <Suspense fallback={<LoadingScreen />}>
                         <Header />
-                        <Content>
+                        <Content className='px-8'>
                             {children}
                         </Content>
                         <Footer />

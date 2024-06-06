@@ -6,6 +6,7 @@ import { FaMinus, FaPlus } from 'react-icons/fa'
 import { CartItemEntity } from '__generated__/graphql'
 import { round } from 'lodash'
 import { useDebounce } from 'hooks'
+import { COLOR } from 'utils/constant'
 
 interface CartItemProps {
     item: CartItemEntity;
@@ -39,12 +40,13 @@ const CartItem: FC<CartItemProps> = ({
     }, [finalQuantity])
 
     return (
-        <Container flex align='center' className='px-4 py-8' style={{ borderBottom: '1px solid #ccc' }}>
+        <Container flex align='center' className='px-4 py-8' style={{ borderBottom: `2px solid ${COLOR.PASTEL_BLUE}` }}>
             <Div className={styles.info}>
                 <Div className={styles.image}>
                     <Image
                         src={item?.product?.image || ''}
                         alt='product image'
+                        fit='cover'
                     />
                 </Div>
                 <Space size={2} direction='vertical'>
@@ -54,7 +56,8 @@ const CartItem: FC<CartItemProps> = ({
             </Div>
 
             <Space size={2} direction='vertical' className={styles.price}>
-                <Text tag='span' fontSize='1.25rem' fontWeight={500}>
+                <Text tag='span' fontSize='1.25rem' fontWeight={500}
+                    className={styles[item?.product?.discount ? 'org-discount' : 'org']}>
                     {price}$
                 </Text>
                 <Text tag='span' fontSize='1rem' className={
@@ -67,6 +70,7 @@ const CartItem: FC<CartItemProps> = ({
             <Div className={styles.quantity}>
                 <Space size={16} className={styles.btns}>
                     <FaMinus onClick={() => {
+                        if (quantity <= 1) return
                         setQuantity(quantity > 1 ? quantity - 1 : 1)
                         setTotal(round(total - (price || 0), 2))
                     }} className='cursor-pointer' />

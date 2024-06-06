@@ -4,7 +4,8 @@ import { useAppDispatch } from 'hooks'
 import { useRouter } from 'next/router'
 import React, { useEffect } from 'react'
 import { loginAction } from 'store/user/slice'
-import { API_HOST, API_METHOD } from 'utils/constant'
+import { API_AUTH_PORT, API_HOST, API_METHOD } from 'utils/constant'
+import { getUrlEndpoint } from 'utils/helper'
 
 const Callback = () => {
     const router = useRouter()
@@ -12,7 +13,11 @@ const Callback = () => {
 
     useEffect(() => {
         (async () => {
-            const url = `${API_METHOD}://${API_HOST}:3000/auth/token`
+            const url = getUrlEndpoint(
+                API_HOST,
+                API_AUTH_PORT,
+                '/auth/token'
+            )
             const { data } = await axiosClient.post(url, {
                 authCode: router.query?.code
             })

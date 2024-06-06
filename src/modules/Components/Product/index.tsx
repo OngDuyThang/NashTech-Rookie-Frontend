@@ -38,6 +38,7 @@ const Product: FC<ProductProps> = ({
                 <Image
                     src={image || ''}
                     alt='product image'
+                    fit='cover'
                 />
             </Div>
             <Div className='w-full p-4' >
@@ -50,7 +51,7 @@ const Product: FC<ProductProps> = ({
                         styles.slash :
                         styles.hide
                 }>{price}$</Text>
-                <Text>
+                <Text className={styles[promotion?.discount_percent ? 'org-discount' : 'org']}>
                     {promotion?.discount_percent ? round(product?.price - (product?.price * promotion?.discount_percent / 100), 2) : product?.price}$
                 </Text>
             </Div>

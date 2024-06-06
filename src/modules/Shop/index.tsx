@@ -1,4 +1,4 @@
-import { Category, Container, Div, Select, Text, Option, Pagination } from 'components'
+import { Category, Container, Div, Select, Text, Option, Pagination, Menu } from 'components'
 import { Products, Title } from 'modules/Components'
 import { useContext, useEffect, useRef, useState, type FC } from 'react'
 import styles from './index.module.scss'
@@ -6,16 +6,17 @@ import clsx from 'clsx'
 import { List, Space } from 'antd'
 import { PAGINATION, PRODUCT_SORT, STAR } from 'utils/constant'
 import { useLazyQuery, useQuery } from '@apollo/client'
-import { GET_CATEGORIES, GET_CATEGORY } from 'graphql/category'
+import { GET_CATEGORIES } from 'graphql/category'
 import { AuthorEntity, CategoryEntity, ProductList } from '__generated__/graphql'
 import { TCategoryTreeNode } from 'types/category'
-import { cloneDeep, isEmpty } from 'lodash'
-import { createCategoryTree } from 'utils/helper'
+import { cloneDeep, isEmpty, map } from 'lodash'
 import { ToastContext, ToastInstance } from 'layout'
 import { TProductQueryState } from 'types/query'
 import { useRouterProductQuery } from 'hooks'
-import { GET_AUTHOR, GET_AUTHORS } from 'graphql/author'
-import { GET_PRODUCTS_BY_RATING } from 'graphql/product'
+import { GET_AUTHORS } from 'graphql/author'
+import { GET_PRODUCT_LIST } from 'graphql/product'
+import { Label, createCategoryTree } from './tree'
+import { FaStar } from "react-icons/fa";
 
 const stars = [
     {
@@ -44,16 +45,11 @@ const Shop: FC = () => {
     const isFirstRender = useRef(true)
     const toast = useContext(ToastContext) as ToastInstance
 
-    const [getCats] = useLazyQuery(GET_CATEGORIES)
+    const [getCategories] = useLazyQuery(GET_CATEGORIES)
     const { data: dataAuthors } = useQuery(GET_AUTHORS)
-    const [getCat] = useLazyQuery(GET_CATEGORY)
-    const [getAuthor] = useLazyQuery(GET_AUTHOR)
-    const [getByRate] = useLazyQuery(GET_PRODUCTS_BY_RATING)
+    const [getProducts] = useLazyQuery(GET_PRODUCT_LIST)
 
     const [categoryTree, setCategoryTree] = useState<TCategoryTreeNode[]>([])
-    const [categoryId, setCategoryId] = useState<string>('')
-    const [authorId, setAuthorId] = useState<string>('')
-    const [star, setStar] = useState<number>(0)
     const [products, setProducts] = useState<ProductList>()
     const [router, query] = useRouterProductQuery()
 
@@ -64,7 +60,10 @@ const Shop: FC = () => {
                 query: {
                     page: PAGINATION.DEFAULT_PAGE,
                     limit: PAGINATION.DEFAULT_LIMIT,
-                    sort: PRODUCT_SORT.ON_SALE
+                    sort: PRODUCT_SORT.ON_SALE,
+                    categoryIds: [],
+                    authorIds: [],
+                    ratings: []
                 },
             }, undefined, { shallow: true });
         }
@@ -73,19 +72,17 @@ const Shop: FC = () => {
     useEffect(() => {
         if (isFirstRender.current) {
             (async () => {
-                const { data: dataCats, error: errorCats } = await getCats()
+                const { data: dataCategories, error: errorCategories } = await getCategories()
 
-                const categories = dataCats?.categories as CategoryEntity[]
+                const categories = dataCategories?.categories as CategoryEntity[]
                 const tree = cloneDeep(createCategoryTree(categories))
                 setCategoryTree(tree)
 
-                setCategoryId(tree[0]?.value)
-                const { data: dataCat, error: errorCat } = await getCat({ variables: { id: tree[0]?.value, ...query } })
+                const { data: dataProducts, error: errorProducts } = await getProducts({ variables: { ...query } })
+                const products = dataProducts?.products as ProductList
+                setProducts(products)
 
-                const products = (dataCat?.category as CategoryEntity)?.products
-                setProducts(products as ProductList)
-
-                const error = errorCats || errorCat
+                const error = errorCategories || errorProducts
                 if (error) toast.error({ message: error?.graphQLErrors[0]?.message })
 
                 isFirstRender.current = false
@@ -98,108 +95,46 @@ const Shop: FC = () => {
     ) => {
         router.push({
             pathname: router.pathname,
-            query: newQuery,
+            query: cloneDeep(newQuery),
         }, undefined, { shallow: true });
 
-        switch (true) {
-            case !!categoryId:
-                const { data: dataCat, error: errorCat } = await getCat({ variables: { id: categoryId, ...newQuery } })
-                setProducts((dataCat?.category as CategoryEntity)?.products as ProductList)
-                if (errorCat) toast.error({ message: errorCat?.graphQLErrors[0]?.message })
-                break;
-            case !!authorId:
-                const { data: dataAuthor, error: errorAuthor } = await getAuthor({ variables: { id: authorId, ...newQuery } })
-                setProducts((dataAuthor?.author as AuthorEntity)?.products as ProductList)
-                if (errorAuthor) toast.error({ message: errorAuthor?.graphQLErrors[0]?.message })
-                break;
-            case !!star:
-                const { data: dataRate, error: errorRate } = await getByRate({ variables: { rating: star, ...newQuery } })
-                setProducts(dataRate?.productsByRating as ProductList)
-                if (errorRate) toast.error({ message: errorRate?.graphQLErrors[0]?.message })
-                break;
-        }
+        const { data: dataProducts, error: errorProducts } = await getProducts({
+            variables: { ...newQuery, ratings: map(newQuery.ratings, Number) }
+        })
+        const products = dataProducts?.products as ProductList
+        setProducts(products)
+        if (errorProducts) toast.error({ message: errorProducts?.graphQLErrors[0]?.message })
     }
 
-    const handleCategory = async (id: string) => {
-        const { data: dataCat, error: errorCat } = await getCat({ variables: { id, ...query } })
-        setProducts((dataCat?.category as CategoryEntity)?.products as ProductList)
-
-        setCategoryId(id)
-        setAuthorId('')
-        setStar(0)
-        if (errorCat) toast.error({ message: errorCat?.graphQLErrors[0]?.message })
-    }
-
-    const handleAuthor = async (id: string) => {
-        const { data: dataAuthor, error: errorAuthor } = await getAuthor({ variables: { id, ...query } })
-        setProducts((dataAuthor?.author as AuthorEntity)?.products as ProductList)
-
-        setCategoryId('')
-        setAuthorId(id)
-        setStar(0)
-        if (errorAuthor) toast.error({ message: errorAuthor?.graphQLErrors[0]?.message })
-    }
-
-    const handleStar = async (star: STAR) => {
-        const { data: dataRate, error: errorRate } = await getByRate({ variables: { rating: star, ...query } })
-        setProducts((dataRate?.productsByRating as ProductList))
-
-        setCategoryId('')
-        setAuthorId('')
-        setStar(star)
-        if (errorRate) toast.error({ message: errorRate?.graphQLErrors[0]?.message })
-    }
-
-    const ProductCategory = (
+    const Category = (
         <Div className={clsx('flex flex-col gap-2', styles.category)}>
             <Text fontSize='1rem' fontWeight={500}>Category</Text>
-            <Category
-                treeData={categoryTree}
-                value={categoryId}
-                placeholder='Enter category'
-                onChange={(value) => handleCategory(value)}
-                className='w-full'
+            <Menu
+                items={categoryTree}
+                setSelectedIds={(categoryIds) => { handleRouterQuery({ ...query, categoryIds }) }}
             />
         </Div>
     )
 
-    const renderAuthors = (dataAuthors?.authors as AuthorEntity[])?.map((author, index) => (
-        <Option key={index} value={author.id}>{author.pen_name}</Option>
-    ))
-
     const Author = (
         <Div className={clsx('flex flex-col gap-2', styles.category)}>
             <Text fontSize='1rem' fontWeight={500}>Author</Text>
-            <Select
-                defaultValue={PRODUCT_SORT.ON_SALE}
-                value={authorId}
-                onChange={(value) => handleAuthor(value)}
-                selectorBg='#fff'
-                className={styles.author}
-            >
-                {renderAuthors}
-            </Select>
+            <Menu
+                items={
+                    (dataAuthors?.authors as AuthorEntity[])
+                        ?.map(author => ({ key: author.id, label: <Label title={author.pen_name} value={author.id} /> }))
+                }
+                setSelectedIds={(authorIds) => { handleRouterQuery({ ...query, authorIds }) }}
+            />
         </Div>
-    )
-
-    const renderRatings = (item: { title: string, value: STAR }) => (
-        <List.Item>
-            <Text
-                style={{ background: item.value == star ? '#f5f5f5' : '#fff' }}
-                fontSize='1rem' fontWeight={500} className='w-full cursor-pointer'
-                onClick={() => handleStar(item.value)}
-            >
-                {item.title}
-            </Text>
-        </List.Item>
     )
 
     const Rating = (
         <Div className={clsx('flex flex-col gap-2', styles.category)}>
             <Text fontSize='1rem' fontWeight={500}>Rating</Text>
-            <List
-                dataSource={stars}
-                renderItem={(item) => renderRatings(item)}
+            <Menu
+                items={stars.map(star => ({ key: star.value, label: <div className='flex gap-1 text-yellow-500'>{new Array(star.value).fill(0).map(() => <FaStar />)}</div> }))}
+                setSelectedIds={(keys) => { handleRouterQuery({ ...query, ratings: keys }) }}
             />
         </Div>
     )
@@ -209,7 +144,7 @@ const Shop: FC = () => {
             <Text fontSize='1rem' fontWeight={500}>
                 Filter By
             </Text>
-            {ProductCategory}
+            {Category}
             {Author}
             {Rating}
         </Container>
@@ -256,7 +191,8 @@ const Shop: FC = () => {
                 page={query.page}
                 limit={query.limit}
                 total={products?.total || 0}
-                onChange={(page, _limit) => handleRouterQuery({ ...query, page: page - 1 })}
+                // onChange={(page, _limit) => handleRouterQuery({ ...query, page: page - 1 })}
+                onChange={() => {}}
                 className='w-full flex justify-center absolute bottom-0 left-0 right-0 pb-4'
             />
         </Container>

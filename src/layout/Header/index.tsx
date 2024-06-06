@@ -7,10 +7,11 @@ import { AntdHeader, ToastContext, ToastInstance } from "layout"
 import { useAppDispatch, useAppSelector } from "hooks"
 import { useRouter } from "next/router"
 import Link from "next/link"
-import { API_HOST, API_METHOD, SERVICE } from "utils/constant"
-import { ApolloClient, InMemoryCache, useLazyQuery, useQuery } from "@apollo/client"
+import { API_AUTH_PORT, API_HOST, SERVICE } from "utils/constant"
+import { useLazyQuery } from "@apollo/client"
 import { GET_USER_CART_COUNT } from "graphql/cart"
 import { setUserCartCount } from "store/cart/slice"
+import { getUrlEndpoint } from "utils/helper"
 
 const navLinks = [
     {
@@ -44,22 +45,20 @@ const Header: FC<HeaderProps> = ({
     const [open, setOpen] = useState<boolean>(false)
 
     useEffect(() => {
-        if (count == undefined && isSession) {
-            (async () => {
-                const { data, error } = await getUserCartCount({ context: { service: SERVICE.CART } })
-                if (data?.getUserCartCount) {
-                    dispatch(setUserCartCount(data?.getUserCartCount))
-                }
-                if (error) toast.error({ message: error?.graphQLErrors[0]?.message })
-            })()
-        }
+        (async () => {
+            const { data, error } = await getUserCartCount({ context: { service: SERVICE.CART } })
+            if (data?.getUserCartCount) {
+                dispatch(setUserCartCount(data?.getUserCartCount))
+            }
+            if (error) toast.error({ message: error?.graphQLErrors[0]?.message })
+        })()
     }, [])
 
     const Links = navLinks.map((link, index) =>
         <Link
             key={index}
             href={{ pathname: link.pathname }}>
-            {link.title}
+            <span className={styles.link}>{link.title}</span>
         </Link>
     )
 
@@ -83,9 +82,13 @@ const Header: FC<HeaderProps> = ({
         <Container width="50" height="100" flex direct="row" gap='16' align="center" justify="end"
             className={styles.right}>
             {Links}
-            <Link href={{ pathname: '/cart' }}>Cart ({count})</Link>
+            <Link href={{ pathname: '/cart' }}><span className={styles.link}>Cart ({count})</span></Link>
             {isSession ? <User /> :
-                <a href={`${API_METHOD}://${API_HOST}:3000/auth/login`}>
+                <a href={getUrlEndpoint(
+                    API_HOST,
+                    API_AUTH_PORT,
+                    '/auth/login'
+                )}>
                     <Button>Login</Button>
                 </a>
             }

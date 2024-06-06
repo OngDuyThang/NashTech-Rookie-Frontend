@@ -2,11 +2,12 @@
     all: unset;
     padding: 0;
     padding: 0 16px;
-    height: 100px;
+    height: 120px;
     overflow: hidden;
-    background-color: var(--pastel-grey);
+    background-color: var(--pastel-blue);
     display: flex;
     flex-direction: column;
     justify-content: center;
     align-items: center;
+    color: #fff
 }

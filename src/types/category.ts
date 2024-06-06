@@ -1,7 +1,9 @@
+import { ReactNode } from "react"
+
 export type TCategoryProps = 'treeData' | 'value' | 'placeholder' | 'onChange'
 
 export type TCategoryTreeNode = {
-    title: string
-    value: string
+    key: string,
+    label: ReactNode,
     children?: TCategoryTreeNode[]
 }

@@ -18,14 +18,14 @@ const Footer: FC<FooterProps> = ({
         <AntdFooter
             {...{ className: clsx(styles.root, className), style }}
         >
-            <Text fontSize='1rem' fontWeight={500}>
+            <Text fontSize='1.2rem' fontWeight={500}>
                 {capitalize('bookworm')}
             </Text>
-            <Text>
+            <Text fontSize='1.15rem'>
                 {capitalize('address')}:
                 Ho Chi Minh City
             </Text>
-            <Text>
+            <Text fontSize='1.15rem'>
                 {capitalize('phone')}:
                 +84 123 456 789
             </Text>

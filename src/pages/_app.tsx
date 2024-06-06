@@ -7,10 +7,10 @@ import { PersistGate } from 'redux-persist/integration/react';
 import { persistStore } from 'redux-persist';
 import { ApolloClient, InMemoryCache, ApolloProvider, createHttpLink, ApolloLink, fromPromise } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
-import { autoLogout, getAccessToken, getGqlEndpoint, isSession, replaceAccessToken } from 'utils/helper';
+import { autoLogout, getAccessToken, getGqlEndpoint, getUrlEndpoint, isSession, replaceAccessToken } from 'utils/helper';
 import { HeadSEO } from 'layout/Components'
 import Layout from 'layout'
-import { API_HOST, API_METHOD, SERVICE } from 'utils/constant';
+import { API_AUTH_PORT, API_HOST, API_METHOD, SERVICE } from 'utils/constant';
 import { axiosClient } from 'api/axios';
 import { AUTH } from 'types/auth';
 import { onError } from '@apollo/client/link/error';
@@ -100,7 +100,11 @@ const errorLink = onError(({ graphQLErrors, networkError, operation, forward }) 
 const getNewAccessToken = async (
     currentAccessToken: string
 ) => {
-    const url = `${API_METHOD}://${API_HOST}:3000/auth/refresh`
+    const url = getUrlEndpoint(
+        API_HOST,
+        API_AUTH_PORT,
+        '/auth/refresh'
+    )
     const { data } = await axiosClient.post(url, {
         [AUTH.ACCESS_TOKEN]: currentAccessToken
     })

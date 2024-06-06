@@ -152,8 +152,12 @@ const Detail: FC = () => {
             })
             toast.success({ message: 'Product added to cart successfully' })
 
-            const { data } = await getUserCartCount({ context: { service: SERVICE.CART } })
+            const { data } = await getUserCartCount({
+                context: { service: SERVICE.CART },
+                fetchPolicy: 'network-only'
+            })
             if (data?.getUserCartCount) {
+                console.log('data?.getUserCartCount', data?.getUserCartCount)
                 dispatch(setUserCartCount(data?.getUserCartCount))
             }
         } catch (e) {
@@ -163,14 +167,12 @@ const Detail: FC = () => {
 
     const ProductDetail = (
         <Container width='70' flex className={styles.detail}>
-            <Container flex direct='column' align='end' gap={16} style={{
-                minWidth: '250px',
-                maxWidth: '250px'
-            }}>
+            <Container flex direct='column' align='end' gap={16} className={styles.book}>
                 <Div className={styles.image}>
                     <Image
                         src={product?.image || ''}
                         alt='product image'
+                        fit='cover'
                     />
                 </Div>
                 <Text fontSize='0.85rem'>
@@ -195,7 +197,8 @@ const Detail: FC = () => {
                 <Text tag='span' fontSize='1.2rem' className={
                     product?.promotion ? styles.slash : styles.hide
                 }>{product?.price}$</Text>
-                <Text tag='span' fontSize='1.25rem' fontWeight={600}>
+                <Text tag='span' fontSize='1.25rem' fontWeight={600}
+                    className={styles[product?.promotion?.discount_percent ? 'org-discount' : 'org']}>
                     {product?.promotion?.discount_percent ? round(product?.price - (product?.price * product?.promotion?.discount_percent / 100), 2) : product?.price}$
                 </Text>
             </Div>

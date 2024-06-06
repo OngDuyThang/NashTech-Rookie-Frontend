@@ -4,10 +4,11 @@
 
 .root {
     height: var(--header-height);
-    background-color: var(--pastel-grey);
+    background-color: var(--pastel-blue);
     color: var(--light-text);
     padding: 0 16px;
     overflow-x: auto;
+
     @media (max-width: 480px) {
         padding: 0 8px;
     }
@@ -16,10 +17,11 @@
         width: 4px;
         height: 4px;
     }
+
     &::-webkit-scrollbar-track {
         margin: 0;
     }
-     
+
     .left {
         @media (max-width: 480px) {
             width: 100%;
@@ -31,24 +33,32 @@
             height: 80%;
             cursor: pointer;
         }
-    
+
         .menus {
             width: auto;
             color: #fff;
+
             @media (max-width: 1200px) {
                 display: none;
             }
         }
-        
+
         .sider {
             display: none;
+
             @media (max-width: 1200px) {
                 display: block;
             }
         }
     }
-    
+
     .right {
+
+        .link {
+            font-size: 1.10rem !important;
+            font-weight: 500 !important;
+        }
+
         @media (max-width: 480px) {
             width: 100%;
         }
@@ -61,11 +71,12 @@
 
         .search {
             width: 300px !important;
+
             @media (max-width: 768px) {
                 display: none;
             }
         }
     }
-    
+
     .sider-menu {}
 }

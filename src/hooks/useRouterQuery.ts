@@ -8,7 +8,10 @@ export const useRouterProductQuery = (): [NextRouter, TProductQueryState] => {
     const query = {
         page: Number(router.query?.page) || PAGINATION.DEFAULT_PAGE,
         limit: Number(router.query?.limit) || PAGINATION.DEFAULT_LIMIT,
-        sort: router.query?.sort as PRODUCT_SORT || PRODUCT_SORT.ON_SALE
+        sort: router.query?.sort as PRODUCT_SORT || PRODUCT_SORT.ON_SALE,
+        categoryIds: router.query?.categoryIds as string[] || [],
+        authorIds: router.query?.authorIds as string[] || [],
+        ratings: router.query?.ratings as string[] || []
     }
 
     return [

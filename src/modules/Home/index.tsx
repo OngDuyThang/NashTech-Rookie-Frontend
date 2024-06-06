@@ -1,14 +1,11 @@
 import { Button, Carousel, Container, Div, Spin, Text } from 'components'
 import { Product, Products } from 'modules/Components'
-import { useEffect, type FC } from 'react'
+import { useEffect, useState, type FC } from 'react'
 import styles from './index.module.scss'
 import { Space } from 'antd'
 import { useQuery } from '@apollo/client'
-import { GET_PROMOTION_PRODUCTS, GET_RECOMMEND_PRODUCTS } from 'graphql/product'
+import { GET_POPULAR_PRODUCTS, GET_PROMOTION_PRODUCTS, GET_RECOMMEND_PRODUCTS } from 'graphql/product'
 import { ProductEntity } from '__generated__/graphql'
-import { axiosClient } from 'api/axios'
-import { getAccessToken } from 'utils/helper'
-import { AUTH } from 'types/auth'
 
 const Loading = (
     <Div className='w-full h-32 flex justify-center items-center'>
@@ -17,17 +14,14 @@ const Loading = (
 )
 
 const Home: FC = () => {
-    const { data: dataPromotion, error } = useQuery(GET_PROMOTION_PRODUCTS)
+    const { data: dataPromotion } = useQuery(GET_PROMOTION_PRODUCTS)
     const { data: dataRecommend } = useQuery(GET_RECOMMEND_PRODUCTS)
+    const { data: dataPopular } = useQuery(GET_POPULAR_PRODUCTS)
+    const [data, setData] = useState<ProductEntity[]>([])
 
-    // useEffect(() => {
-    //     (async () => {
-    //         const { data } = await axiosClient.post('http://localhost:3000/auth/refresh', {
-    //             [AUTH.ACCESS_TOKEN]: getAccessToken()
-    //         })
-    //         console.log(data)
-    //     })()
-    // }, [])
+    useEffect(() => {
+        setData(dataRecommend?.recommendProducts)
+    }, [dataRecommend])
 
     const renderPromotions = (dataPromotion?.promotionProducts as ProductEntity[])?.map((product, index) => (
         <Div key={index}>
@@ -63,13 +57,13 @@ const Home: FC = () => {
                     Featured Books
                 </Text>
                 <Space size={32}>
-                    <Button>Recommend</Button>
-                    <Button>Popular</Button>
+                    <Button onClick={() => setData(dataRecommend?.recommendProducts)}>Recommend</Button>
+                    <Button onClick={() => setData(dataPopular?.popularProducts)}>Popular</Button>
                 </Space>
             </Container>
             <Products
                 className={styles.featured}
-                products={(dataRecommend?.recommendProducts as ProductEntity[])}
+                products={data}
             />
         </>
     )

@@ -2,8 +2,8 @@ import axios, { AxiosError, AxiosRequestConfig, AxiosResponse, InternalAxiosRequ
 import { jwtDecode } from "jwt-decode";
 import { TApiResponse } from "types/api";
 import { AUTH } from "types/auth";
-import { API_HOST, API_METHOD } from "utils/constant";
-import { getAccessToken, autoLogout, replaceAccessToken, isSession } from "utils/helper";
+import { API_AUTH_PORT, API_HOST, API_METHOD } from "utils/constant";
+import { getAccessToken, autoLogout, replaceAccessToken, isSession, getUrlEndpoint } from "utils/helper";
 
 // axios instance for client
 export const axiosClient = axios.create({
@@ -43,7 +43,11 @@ axiosClient.interceptors.response.use(
                 const payload = jwtDecode(accessToken)
 
                 if (accessToken && payload && Date.now() >= Number(payload?.exp) * 1000) {
-                    const url = `${API_METHOD}://${API_HOST}:3000/auth/refresh`
+                    const url = getUrlEndpoint(
+                        API_HOST,
+                        API_AUTH_PORT,
+                        '/auth/refresh'
+                    )
                     const res = await axiosClient.post(url, {
                         [AUTH.ACCESS_TOKEN]: accessToken
                     })

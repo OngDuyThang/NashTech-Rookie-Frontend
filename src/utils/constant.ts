@@ -1,11 +1,18 @@
 export const API_METHOD = process.env.NEXT_PUBLIC_API_METHOD
 export const API_HOST = process.env.NEXT_PUBLIC_API_HOST
+export const API_AUTH_PORT = process.env.NEXT_PUBLIC_API_AUTH_PORT
+export const API_PRODUCT_PORT = process.env.NEXT_PUBLIC_API_PRODUCT_PORT
+export const API_CART_PORT = process.env.NEXT_PUBLIC_API_CART_PORT
+export const API_ORDER_PORT = process.env.NEXT_PUBLIC_API_ORDER_PORT
+export const API_UPLOAD_PORT = process.env.NEXT_PUBLIC_API_UPLOAD_PORT
+export const API_ASSET_PORT = process.env.NEXT_PUBLIC_API_ASSET_PORT
 
 export const MAX_LIMIT_NUMBER = 10000
 
 export enum COLOR {
-    PASTEL_GREY = '#cfcfc4',
-    PRIMARY_BUTTON = '#6C767E',
+    PASTEL_BLUE = '#88AED0',
+    LIGHT_BLUE = '#def2f8',
+    PRIMARY_BUTTON = '#125ca5',
     BLACK_TEXT = '#515151'
 }
 

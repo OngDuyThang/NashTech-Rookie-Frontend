@@ -124,10 +124,10 @@ const Cart: FC = () => {
     const Left = (
         <Container width='70' flex direct='column' className={styles.left}>
             <Div className={styles.head}>
-                <Text className={clsx(styles.title, styles.large)}>Product</Text>
-                <Text className={styles.title}>Price</Text>
-                <Text className={styles.title}>Quantity</Text>
-                <Text className={styles.title}>Total</Text>
+                <Text tag='span' className={clsx(styles['title-product'], styles.large)}>Product</Text>
+                <Text tag='span' className={styles['title-price']}>Price</Text>
+                <Text tag='span' className={styles['title-quantity']}>Quantity</Text>
+                <Text tag='span' className={styles['title-total']}>Total</Text>
             </Div>
             {renderItems}
         </Container>

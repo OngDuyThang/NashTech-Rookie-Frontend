@@ -3,24 +3,35 @@
         padding: 16px;
 
         .left {
-            border: 1px solid #ccc;
+            border: 2px solid var(--pastel-blue);
             border-radius: 4px;
 
             .head {
                 padding: 16px;
-                background-color: var(--light-grey);
+                background-color: var(--light-blue);
                 display: flex;
 
-                .title {
-                    width: 20%;
+                span {
                     font-size: 1rem;
                     font-weight: 500;
                     display: flex;
                     align-items: center;
                 }
 
-                .large {
+                .title-product {
                     width: 40%;
+                }
+
+                .title-price {
+                    width: 20%;
+                }
+
+                .title-quantity {
+                    width: 30%;
+                }
+
+                .title-total {
+                    width: 10%;
                 }
             }
 
@@ -31,28 +42,46 @@
                 gap: 16px;
 
                 .image {
-                    width: 200px;
-                    height: 250px;
+                    width: 100px;
+                    height: 120px;
                 }
             }
 
-            .price,
-            .quantity,
-            .total {
+            .price {
                 width: 20%;
             }
 
             .quantity {
+                width: 30%;
+            }
+
+            .total {
+                width: 10%;
+            }
+
+            .quantity {
                 display: flex;
-                flex-direction: column;
                 gap: 16px;
-                align-items: start;
+                align-items: center;
 
                 .btns {
                     padding: 8px 16px;
                     border-radius: 4px;
-                    background-color: var(--light-grey);
+                    background-color: var(--light-blue);
                 }
+            }
+
+            .org {
+                font-size: 1rem;
+                font-weight: 500;
+                color: rgb(243, 70, 70);
+            }
+
+            .org-discount {
+                padding: 4px 8px;
+                background-color: rgb(243, 70, 70);
+                color: white;
+                border-radius: 4px;
             }
 
             .slash {
@@ -75,13 +104,13 @@
         }
 
         .right {
-            border: 1px solid #ccc;
+            border: 2px solid var(--pastel-blue);
             border-radius: 4px;
             height: fit-content;
 
             .head {
                 padding: 16px;
-                background-color: var(--light-grey);
+                background-color: var(--light-blue);
                 display: flex;
                 justify-content: center;
                 align-items: center;

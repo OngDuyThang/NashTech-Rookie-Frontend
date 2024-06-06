@@ -77,32 +77,13 @@ export const getGqlEndpoint = (serviceName: SERVICE) => {
     return `${API_METHOD}://${API_HOST}:${port}/graphql`
 }
 
-export const createCategoryTree = (
-    categories: CategoryEntity[]
-): TCategoryTreeNode[] => {
-    if (isEmpty(categories)) return []
-
-    const map: Record<string, TCategoryTreeNode> = {}
-    const result = []
-
-    for (let i = 0; i < categories.length; i++) {
-        const category = categories[i]
-        map[category.id] = {
-            title: category.name,
-            value: category.id,
-            children: []
-        }
+export const getUrlEndpoint = (
+    hostname: string | undefined,
+    port: number | string | undefined,
+    path: string
+) => {
+    if (path[0] != '/') {
+        path = '/' + path
     }
-
-    for (let i = 0; i < categories.length; i++) {
-        const category = categories[i]
-        if (category.parent_id != null) {
-            const parent = map[category.parent_id]
-            parent.children?.push(map[category.id])
-        } else {
-            result.push(map[category.id])
-        }
-    }
-
-    return result
+    return `${API_METHOD}://${hostname}:${Number(port)}${path}`
 }
