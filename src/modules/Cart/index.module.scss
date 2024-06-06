@@ -1,0 +1,120 @@
+.root {
+    .body {
+        padding: 16px;
+
+        .left {
+            border: 2px solid var(--pastel-blue);
+            border-radius: 4px;
+
+            .head {
+                padding: 16px;
+                background-color: var(--light-blue);
+                display: flex;
+
+                span {
+                    font-size: 1rem;
+                    font-weight: 500;
+                    display: flex;
+                    align-items: center;
+                }
+
+                .title-product {
+                    width: 40%;
+                }
+
+                .title-price {
+                    width: 20%;
+                }
+
+                .title-quantity {
+                    width: 30%;
+                }
+
+                .title-total {
+                    width: 10%;
+                }
+            }
+
+            .info {
+                width: 40%;
+                display: flex;
+                align-items: center;
+                gap: 16px;
+
+                .image {
+                    width: 100px;
+                    height: 120px;
+                }
+            }
+
+            .price {
+                width: 20%;
+            }
+
+            .quantity {
+                width: 30%;
+            }
+
+            .total {
+                width: 10%;
+            }
+
+            .quantity {
+                display: flex;
+                gap: 16px;
+                align-items: center;
+
+                .btns {
+                    padding: 8px 16px;
+                    border-radius: 4px;
+                    background-color: var(--light-blue);
+                }
+            }
+
+            .org {
+                font-size: 1rem;
+                font-weight: 500;
+                color: rgb(243, 70, 70);
+            }
+
+            .org-discount {
+                padding: 4px 8px;
+                background-color: rgb(243, 70, 70);
+                color: white;
+                border-radius: 4px;
+            }
+
+            .slash {
+                position: relative;
+
+                &::before {
+                    content: '';
+                    width: 100%;
+                    height: 1px;
+                    background: black;
+                    position: absolute;
+                    top: 50%;
+                    left: 0;
+                }
+            }
+
+            .hide {
+                display: none
+            }
+        }
+
+        .right {
+            border: 2px solid var(--pastel-blue);
+            border-radius: 4px;
+            height: fit-content;
+
+            .head {
+                padding: 16px;
+                background-color: var(--light-blue);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+            }
+        }
+    }
+}

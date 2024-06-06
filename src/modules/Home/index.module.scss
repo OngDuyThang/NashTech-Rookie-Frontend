@@ -1,0 +1,24 @@
+.root {
+    overflow-x: hidden;
+
+    .head {
+        padding: 16px;
+    }
+
+    .carousel-container {
+        border: 2px solid var(--pastel-blue);
+        width: calc(100% - 32px);
+        padding: 16px 48px;
+        margin: auto;
+        border-radius: 4px;
+    }
+
+    .featured {
+        border: 2px solid var(--pastel-blue);
+        width: calc(100% - 32px);
+        padding: 16px 48px;
+        margin: auto;
+        border-radius: 4px;
+        margin-bottom: 16px;
+    }
+}

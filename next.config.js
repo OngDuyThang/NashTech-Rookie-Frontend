@@ -1,4 +1,29 @@
 /** @type {import('next').NextConfig} */
-const nextConfig = {}
+const withPlugins = require('next-compose-plugins');
 
-module.exports = nextConfig
+const nextConfig = {
+    images: {
+        remotePatterns: [
+          {
+            protocol: 'https',
+            hostname: 'asana-clone-bucket.s3.ap-southeast-1.amazonaws.com',
+            port: '',
+            pathname: '/**',
+          },
+        ],
+      },
+}
+
+const redirects = {
+    async redirects() {
+        return [
+            {
+                source: '/',
+                destination: '/home',
+                permanent: true,
+            },
+        ];
+    },
+};
+
+module.exports = withPlugins([[redirects]], nextConfig)
