@@ -1,10 +1,14 @@
 import { Container, Div, Image, Text } from 'components'
-import { type FC } from 'react'
+import { CSSProperties, useEffect, type FC } from 'react'
 import styles from './index.module.scss'
 import clsx from 'clsx'
 import { ProductEntity } from '__generated__/graphql'
 import { useRouter } from 'next/router'
-import { round } from 'lodash'
+import { floor, round } from 'lodash'
+import { FaStar } from "react-icons/fa6";
+import { FaRegStarHalfStroke } from "react-icons/fa6";
+import { roundRating } from 'utils/helper'
+import { FaRegStar } from "react-icons/fa";
 
 interface ProductProps {
     product: ProductEntity
@@ -40,10 +44,19 @@ const Product: FC<ProductProps> = ({
                     alt='product image'
                     fit='cover'
                 />
+                <Text className={styles.discount}>-{promotion?.discount_percent}%</Text>
             </Div>
-            <Div className='w-full p-4' >
+            <Div className='w-full px-4 pt-4' >
                 <Text fontSize='1.25rem' fontWeight={500}>{title}</Text>
                 <Text fontSize='0.85rem'>{author?.pen_name}</Text>
+            </Div>
+            <Div className={clsx('w-full p-4 flex gap-1', styles.stars)}>
+                {new Array(
+                    floor(roundRating(product?.rating || 0))
+                ).fill(0)
+                    .map((_, index) => <FaStar key={index} className={styles.star} />)}
+                {roundRating(product?.rating || 0) % 1 !== 0 && <FaRegStarHalfStroke className={styles.star} />}
+                {!product?.rating && new Array(5).fill(0).map((_, index) => <FaRegStar key={index} className={styles.star} />)}
             </Div>
             <Div className={clsx('w-full flex gap-2 p-4', styles.price)}>
                 <Text className={

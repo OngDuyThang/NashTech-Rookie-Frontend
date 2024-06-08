@@ -89,6 +89,17 @@
                     padding-bottom: 16px;
                     border-bottom: 2px solid var(--pastel-blue);
                 }
+
+                .stars {
+                    display: flex;
+                    gap: 4px;
+
+                    .star {
+                        width: 18px !important;
+                        height: 18px !important;
+                        color: rgb(255, 196, 0) !important
+                    }
+                }
             }
 
             .write-review {

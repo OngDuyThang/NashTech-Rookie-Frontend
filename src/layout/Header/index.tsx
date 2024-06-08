@@ -1,17 +1,23 @@
 import { useContext, useEffect, useState, type FC } from "react"
 import styles from './index.module.scss'
 import { User, OpenSider } from "layout/Components"
-import { Image, Div, Container, Drawer, Button } from "components"
+import { Image, Div, Container, Drawer, Button, Text } from "components"
 import clsx from "clsx"
 import { AntdHeader, ToastContext, ToastInstance } from "layout"
 import { useAppDispatch, useAppSelector } from "hooks"
 import { useRouter } from "next/router"
 import Link from "next/link"
 import { API_AUTH_PORT, API_HOST, SERVICE } from "utils/constant"
-import { useLazyQuery } from "@apollo/client"
+import { useLazyQuery, useQuery } from "@apollo/client"
 import { GET_USER_CART_COUNT } from "graphql/cart"
 import { setUserCartCount } from "store/cart/slice"
 import { getUrlEndpoint } from "utils/helper"
+import Slider, { Settings } from "react-slick"
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import { GET_ALL_PROMOTIONS } from "graphql/promotion/query"
+import { PromotionEntity } from "__generated__/graphql"
+import { isEmpty } from "lodash"
 
 const navLinks = [
     {
@@ -42,15 +48,15 @@ const Header: FC<HeaderProps> = ({
     const router = useRouter()
 
     const [getUserCartCount] = useLazyQuery(GET_USER_CART_COUNT)
+    const { data: dataPromotions } = useQuery(GET_ALL_PROMOTIONS)
     const [open, setOpen] = useState<boolean>(false)
 
     useEffect(() => {
         (async () => {
-            const { data, error } = await getUserCartCount({ context: { service: SERVICE.CART } })
+            const { data } = await getUserCartCount({ context: { service: SERVICE.CART } })
             if (data?.getUserCartCount) {
                 dispatch(setUserCartCount(data?.getUserCartCount))
             }
-            if (error) toast.error({ message: error?.graphQLErrors[0]?.message })
         })()
     }, [])
 
@@ -106,8 +112,30 @@ const Header: FC<HeaderProps> = ({
         </Drawer>
     )
 
+    const settings: Settings = {
+        dots: false,
+        infinite: true,
+        speed: 10000,
+        autoplay: true,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        arrows: false,
+    }
+
+    const Promotions = !isEmpty(dataPromotions?.promotions) ? (
+        <Slider {...settings}>
+            {(dataPromotions?.promotions as PromotionEntity[])?.map((promotion, index) => (
+                <Container key={index} color="#fff" className={styles.promotion}>
+                    <Text tag="p" className="w-full text-center" fontSize="1rem">{promotion.name}</Text>
+                    <Text tag="p" className="w-full text-center" fontSize="0.75rem">{promotion.description}</Text>
+                </Container>
+            ))}
+        </Slider>
+    ) : null
+
     return (
         <AntdHeader className={styles.header}>
+            {Promotions}
             <Container className={clsx(styles.root, className)} flex gap='16'>
                 {Left}
                 {Right}

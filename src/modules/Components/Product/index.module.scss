@@ -1,5 +1,6 @@
 .root {
     width: calc(100% - 32px) !important;
+    height: 100%;
     margin: auto;
     border: 2px solid var(--pastel-blue);
     border-radius: 4px;
@@ -8,6 +9,29 @@
         width: 100%;
         height: 280px;
         cursor: pointer;
+        position: relative;
+
+        .discount {
+            background: rgb(243, 70, 70);
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: absolute;
+            top: 0;
+            right: 0;
+        }
+    }
+
+    .stars {
+        .star {
+            width: 18px !important;
+            height: 18px !important;
+            color: rgb(255, 196, 0) !important
+        }
     }
 
     .price {
