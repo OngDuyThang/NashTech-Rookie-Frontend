@@ -1,5 +1,13 @@
 .header {
     all: unset;
+
+    .promotion {
+        display: flex;
+        padding: 2px 16px;
+        text-align: center;
+        background-color: rgb(243, 70, 70);
+        font-weight: 600;
+    }
 }
 
 .root {

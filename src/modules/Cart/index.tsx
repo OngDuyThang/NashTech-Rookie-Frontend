@@ -1,24 +1,32 @@
-import { Button, Container, Div, Form, Input, LoadingScreen, Modal, Text, TextArea } from 'components'
+import { Button, CheckoutForm, Container, Div, Form, Input, LoadingScreen, Modal, Option, Select, Text, TextArea } from 'components'
 import { Title } from 'modules/Components'
 import { useContext, useEffect, useRef, useState, type FC } from 'react'
 import styles from './index.module.scss'
 import clsx from 'clsx'
-import { useLazyQuery, useMutation, useQuery } from '@apollo/client'
+import { useLazyQuery, useMutation } from '@apollo/client'
 import { GET_USER_CART, REMOVE_CART_ITEM, UPDATE_CART_ITEM } from 'graphql/cart'
 import { ToastContext, ToastInstance } from 'layout'
 import { CartEntity, CartItemEntity } from '__generated__/graphql'
 import CartItem from './Item'
-import { SERVICE } from 'utils/constant'
-import { cloneDeep, filter, round } from 'lodash'
+import { API_HOST, API_ORDER_PORT, PAYMENT_METHOD, SERVICE } from 'utils/constant'
+import { cloneDeep, filter, isEmpty, round, set } from 'lodash'
 import { PLACE_ORDER } from 'graphql/order'
 import { Item, useForm } from 'components/Form'
-import { isSession } from 'utils/helper'
-import { useDispatch } from 'react-redux'
+import { getAccessToken, getUrlEndpoint, isSession } from 'utils/helper'
 import { setUserCartCount } from 'store/cart/slice'
-import { useAppSelector } from 'hooks'
+import { useAppDispatch, useAppSelector } from 'hooks'
+import { loadStripe } from '@stripe/stripe-js'
+import { Elements } from '@stripe/react-stripe-js'
+import { Radio } from 'antd'
+import { useRouter } from 'next/router'
+
+const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string, { locale: 'en' });
 
 const Cart: FC = () => {
-    const dispatch = useDispatch()
+    const [clientSecret, setClientSecret] = useState<string>('');
+    const [orderId, setOrderId] = useState<string>('')
+    const dispatch = useAppDispatch()
+    const router = useRouter()
     const { count } = useAppSelector(state => state.cart)
     const isFirstRender = useRef(true)
     const toast = useContext(ToastContext) as ToastInstance
@@ -34,7 +42,7 @@ const Cart: FC = () => {
     const [placeOrder, { loading }] = useMutation(PLACE_ORDER)
 
     useEffect(() => {
-        if (isFirstRender.current) {
+        if (isFirstRender.current && isSession() && getAccessToken()) {
             (async () => {
                 const { data, error } = await getUserCart({ context: { service: SERVICE.CART } })
                 const items = (data?.cart as CartEntity)?.items as CartItemEntity[]
@@ -95,16 +103,42 @@ const Cart: FC = () => {
             toast.error({ message: 'You must login first' })
             return
         }
-        console.log(value)
+
+        // const url = getUrlEndpoint(
+        //     API_HOST,
+        //     API_ORDER_PORT,
+        //     '/api/orders/test'
+        // )
+        // fetch(url, {
+        //     method: "POST",
+        //     headers: { "Content-Type": "application/json" },
+        // })
+        //     .then((res) => res.json())
+        //     .then((data) => {
+        //         console.log(data?.data?.clientSecret)
+        //         setClientSecret(data?.data?.clientSecret)
+        //     });
 
         try {
-            await placeOrder({ context: { service: SERVICE.ORDER } })
-            toast.success({ message: 'Place order successfully' })
+            const { data } = await placeOrder({
+                variables: { order: value },
+                context: { service: SERVICE.ORDER }
+            })
+
+            const clientSecret = data?.placeOrder?.clientSecret as string
+            const orderId = data?.placeOrder?.orderId as string
+            if (!isEmpty(clientSecret) && !isEmpty(orderId)) {
+                setOrderId(orderId)
+                setClientSecret(clientSecret)
+                return
+            }
 
             setItems([])
             setTotal(0)
+            setOpen(false)
             dispatch(setUserCartCount(0))
             form.resetFields()
+            router.push({ pathname: '/order-complete' })
         } catch (e) {
             toast.error({ message: String(e) })
         }
@@ -195,6 +229,15 @@ const Cart: FC = () => {
             >
                 <TextArea placeholder='' autoSize={{ minRows: 3, maxRows: 3 }} />
             </Item>
+            <Item
+                label='Payment Method'
+                name='payment_method'
+            >
+                <Radio.Group defaultValue={PAYMENT_METHOD.COD}>
+                    <Radio value={PAYMENT_METHOD.COD}>{PAYMENT_METHOD.COD}</Radio>
+                    <Radio value={PAYMENT_METHOD.STRIPE}>{PAYMENT_METHOD.STRIPE}</Radio>
+                </Radio.Group>
+            </Item>
             <Item>
                 <Button
                     className='w-full flex justify-center items-center py-5'
@@ -220,11 +263,24 @@ const Cart: FC = () => {
                 {Right}
             </Container>
             <Modal
-                title='Place Order Form'
+                title={<Text fontSize='1.15rem' fontWeight={500}>Place Order</Text>}
                 open={open}
-                onCancel={() => setOpen(false)}
+                onCancel={() => {
+                    setOpen(false)
+                    setOrderId('')
+                    setClientSecret('')
+                }}
             >
-                {OrderForm}
+                {clientSecret && orderId ? (
+                    <Elements options={{
+                        clientSecret,
+                        appearance: {
+                            theme: 'flat'
+                        }
+                    }} stripe={stripePromise}>
+                        <CheckoutForm orderId={orderId} />
+                    </Elements>
+                ) : OrderForm}
             </Modal>
         </Container>
     )

@@ -2,7 +2,7 @@ import { logout } from "api/auth"
 import { API_HOST, API_METHOD, SERVICE } from "./constant"
 import { CategoryEntity } from "__generated__/graphql"
 import { TCategoryTreeNode } from "types/category"
-import { isEmpty } from "lodash"
+import { ceil, floor, isEmpty } from "lodash"
 import { AUTH } from "types/auth"
 
 export const getRoot = () => {
@@ -87,3 +87,12 @@ export const getUrlEndpoint = (
     }
     return `${API_METHOD}://${hostname}:${Number(port)}${path}`
 }
+
+export const roundRating = (rating: number) => {
+    if (rating % 1 < 0.5) {
+        return floor(rating);
+    } else if (rating % 1 > 0.5) {
+        return ceil(rating, 1);
+    }
+    return rating;
+};

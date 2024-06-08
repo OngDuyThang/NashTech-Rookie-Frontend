@@ -4,18 +4,20 @@ import { useContext, useEffect, useRef, useState, type FC } from 'react'
 import styles from './index.module.scss'
 import { Space } from 'antd'
 import { PAGINATION, REVIEW_SORT, SERVICE, STAR } from 'utils/constant'
-import { FaPlus, FaMinus } from "react-icons/fa";
+import { FaPlus, FaMinus, FaStar, FaRegStar } from "react-icons/fa";
 import { Item, useForm } from 'components/Form'
 import { useLazyQuery, useMutation } from '@apollo/client'
 import { CREATE_REVIEW, GET_PRODUCT_BY_ID } from 'graphql/review'
 import { CreateCartItemDto, CreateReviewDto, ProductEntity, ReviewEntity, ReviewList } from '__generated__/graphql'
-import { cloneDeep, round, sum } from 'lodash'
+import { cloneDeep, floor, round, sum } from 'lodash'
 import moment from 'moment'
 import { useAppDispatch, useRouterReviewQuery } from 'hooks'
 import { ToastContext, ToastInstance } from 'layout'
 import { TReviewQueryState } from 'types/query'
 import { ADD_TO_USER_CART, GET_USER_CART_COUNT } from 'graphql/cart'
 import { setUserCartCount } from 'store/cart/slice'
+import { isSession, roundRating } from 'utils/helper'
+import { FaRegStarHalfStroke } from 'react-icons/fa6'
 
 const stars = [
     {
@@ -137,6 +139,11 @@ const Detail: FC = () => {
     }
 
     const handleAddToCart = async () => {
+        if (!isSession()) {
+            toast.error({ message: 'You must login first' })
+            return
+        }
+
         const createItemDto: CreateCartItemDto = {
             product_id: product?.id || '',
             quantity
@@ -280,7 +287,14 @@ const Detail: FC = () => {
             </Container>
 
             <Container flex direct='column' gap={16}>
-                <Text fontSize='1.5rem' fontWeight={500}>{product?.rating} Star</Text>
+                <Div className={styles.stars}>
+                    {new Array(
+                        floor(roundRating(product?.rating || 0))
+                    ).fill(0)
+                        .map((_, index) => <FaStar key={index} className={styles.star} />)}
+                    {roundRating(product?.rating || 0) % 1 !== 0 && <FaRegStarHalfStroke className={styles.star} />}
+                    {!product?.rating && new Array(5).fill(0).map((_, index) => <FaRegStar key={index} className={styles.star} />)}
+                </Div>
                 <Space size={32}>
                     <Text textDecoration='underline' tag='span'>({sum(product?.ratings)})</Text>
                     <Space size={8}>

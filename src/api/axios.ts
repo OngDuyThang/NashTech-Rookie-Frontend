@@ -38,8 +38,8 @@ axiosClient.interceptors.response.use(
         if (response) {
             const { data: { message, statusCode } } = response
 
-            if (statusCode == 401 && !url.includes('refresh') && isSession()) {
-                const accessToken = getAccessToken()
+            const accessToken = getAccessToken()
+            if (statusCode == 401 && !url.includes('refresh') && isSession() && accessToken) {
                 const payload = jwtDecode(accessToken)
 
                 if (accessToken && payload && Date.now() >= Number(payload?.exp) * 1000) {
