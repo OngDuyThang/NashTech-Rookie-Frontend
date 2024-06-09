@@ -7,6 +7,7 @@ import { CartItemEntity } from '__generated__/graphql'
 import { round } from 'lodash'
 import { useDebounce } from 'hooks'
 import { COLOR } from 'utils/constant'
+import Link from 'next/link'
 
 interface CartItemProps {
     item: CartItemEntity;
@@ -42,13 +43,19 @@ const CartItem: FC<CartItemProps> = ({
     return (
         <Container flex align='center' className='px-4 py-8' style={{ borderBottom: `2px solid #ebebeb` }}>
             <Div className={styles.info}>
-                <Div className={styles.image}>
-                    <Image
-                        src={item?.product?.image || ''}
-                        alt='product image'
-                        fit='cover'
-                    />
-                </Div>
+                <Link href={{
+                    pathname: '/product/[slug]',
+                    query: { slug: item?.product?.id }
+                }}>
+                    <Div className={styles.image}>
+                        <Image
+                            src={item?.product?.image || ''}
+                            alt='product image'
+                            fit='cover'
+                        />
+                    </Div>
+                </Link>
+
                 <Space size={2} direction='vertical'>
                     <Text tag='span' fontSize='1.25rem' fontWeight={500}>{item?.product?.title}</Text>
                     <Text tag='span' fontSize='1rem'>{item?.product?.author}</Text>

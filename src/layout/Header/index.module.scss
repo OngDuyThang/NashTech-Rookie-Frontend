@@ -7,7 +7,7 @@
     background-color: var(--dark-blue);
     color: var(--light-text);
     padding: 0 16px;
-    overflow-x: auto;
+    overflow: visible;
 
     @media (max-width: 480px) {
         padding: 0 8px;
@@ -74,6 +74,16 @@
 
             @media (max-width: 768px) {
                 display: none;
+            }
+        }
+
+        .expand {
+            box-shadow: rgba(0, 0, 0, 0.35) 0px 5px 15px;
+
+            .item {
+                &:hover {
+                    background-color: var(--light-grey);
+                }
             }
         }
     }

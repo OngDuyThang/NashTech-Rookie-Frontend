@@ -134,35 +134,22 @@ export const GET_PRODUCT_LIST = gql`
 
 `;
 
-// export const GET_PRODUCTS_BY_RATING = gql`
-//     query ProductsByRating($rating: Float, $limit: Int, $page: Int, $sort: String) {
-//     productsByRating(rating: $rating, limit: $limit, page: $page, sort: $sort) {
-//         limit
-//         page
-//         total
-//         data {
-//             author_id
-//             category_id
-//             description
-//             id
-//             image
-//             price
-//             promotion_id
-//             rating
-//             ratings
-//             title
-//             author {
-//                 id
-//                 pen_name
-//             }
-//             promotion {
-//                 description
-//                 discount_percent
-//                 id
-//                 name
-//             }
-//         }
-//     }
-// }
 
-// `;
+export const SEARCH_PRODUCTS = gql`
+query SearchProducts($query: String!) {
+    searchProducts(query: $query) {
+        author_id
+        category_id
+        created_at
+        description
+        id
+        image
+        price
+        promotion_id
+        rating
+        ratings
+        title
+        updated_at
+    }
+}
+`;

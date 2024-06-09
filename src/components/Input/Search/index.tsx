@@ -6,6 +6,7 @@ import styles from '../index.module.scss'
 import clsx from 'clsx'
 import { ConfigProvider as AntdConfigProvider } from 'antd'
 import { COLOR } from 'utils/constant'
+import { FaSearch } from "react-icons/fa";
 
 interface SearchProps extends
     Pick<Required<AntdSearchProps>, TSearchProps>,
@@ -23,7 +24,7 @@ const Search: FC<SearchProps> = ({
     onChange,
     bordered = true,
     prefix,
-    suffix,
+    suffix = <FaSearch />,
     disabled = false,
     size = 'middle',
     isHeaderInput = false,
@@ -32,7 +33,14 @@ const Search: FC<SearchProps> = ({
     return (
         <AntdConfigProvider theme={{
             token: {
-                colorPrimary: COLOR.PRIMARY_BUTTON
+                colorPrimary: COLOR.PRIMARY_BUTTON,
+                borderRadius: 0,
+            },
+            components: {
+                Input: {
+                    paddingBlock: 8,
+                    paddingBlockSM: 8
+                }
             }
         }}>
             <AntdSearch

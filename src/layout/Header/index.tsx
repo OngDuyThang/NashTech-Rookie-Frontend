@@ -1,10 +1,10 @@
 import { useContext, useEffect, useState, type FC } from "react"
 import styles from './index.module.scss'
 import { User, OpenSider } from "layout/Components"
-import { Image, Div, Container, Drawer, Button, Text } from "components"
+import { Image, Div, Container, Drawer, Button, Text, Search } from "components"
 import clsx from "clsx"
 import { AntdHeader, ToastContext, ToastInstance } from "layout"
-import { useAppDispatch, useAppSelector } from "hooks"
+import { useAppDispatch, useAppSelector, useDebounce } from "hooks"
 import { useRouter } from "next/router"
 import Link from "next/link"
 import { API_AUTH_PORT, API_HOST, COLOR, SERVICE } from "utils/constant"
@@ -14,6 +14,10 @@ import { setUserCartCount } from "store/cart/slice"
 import { getUrlEndpoint } from "utils/helper"
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
+import { SEARCH_PRODUCTS } from "graphql/product"
+import { ProductEntity } from "__generated__/graphql"
+import { isEmpty } from "lodash"
+import { Space } from "antd"
 
 const navLinks = [
     {
@@ -44,8 +48,10 @@ const Header: FC<HeaderProps> = ({
     const router = useRouter()
 
     const [getUserCartCount] = useLazyQuery(GET_USER_CART_COUNT)
+    const [searchProducts, { data: dataSearchProducts }] = useLazyQuery(SEARCH_PRODUCTS)
 
     const [open, setOpen] = useState<boolean>(false)
+    const [search, setSearch] = useState<string>('')
 
     useEffect(() => {
         (async () => {
@@ -55,6 +61,44 @@ const Header: FC<HeaderProps> = ({
             }
         })()
     }, [])
+
+    useEffect(() => {
+        if (!isEmpty(search)) {
+            searchProducts({ variables: { query: search } })
+        }
+    }, [search])
+
+
+    const Expand = !isEmpty(search) && dataSearchProducts?.searchProducts ? (
+        <Container flex direct="column" className={clsx(
+            "absolute right-0 mt-4 min-w-[400px] max-h-[400px] bg-white z-10 overflow-y-scroll rounded-lg",
+            styles.expand
+        )}>
+            {(dataSearchProducts?.searchProducts as ProductEntity[])?.map((product, index) => (
+                <Link href={{
+                    pathname: '/product/[slug]',
+                    query: { slug: product?.id }
+                }}>
+                    <Container key={index} flex justify="start" align="center" gap={8} className={clsx(
+                        "p-4 cursor-pointer",
+                        styles.item
+                    )}>
+                        <Div className="w-[68px] h-[78px]">
+                            <Image
+                                src={product?.image || ''}
+                                alt="product image"
+                                fit="cover"
+                            />
+                        </Div>
+                        <Space size={4} direction="vertical">
+                            <Text fontSize="1rem" fontWeight={500} color={COLOR.BLACK_TEXT}>{product?.title}</Text>
+                            <Text fontSize="0.85rem" fontWeight={500} color={COLOR.BLACK_TEXT}>{product?.price}$</Text>
+                        </Space>
+                    </Container>
+                </Link>
+            ))}
+        </Container>
+    ) : null
 
     const Links = navLinks.map((link, index) =>
         <Link
@@ -92,6 +136,14 @@ const Header: FC<HeaderProps> = ({
     const Right = (
         <Container width="20" height="100" flex direct="row" gap='16' align="center" justify="end"
             className={styles.right}>
+            <Div className="relative z-50 overflow-visible">
+                <Search
+                    placeholder='Search books...'
+                    onSearch={(value) => setSearch(value)}
+                    className="w-full"
+                />
+                {Expand}
+            </Div>
             {isSession ? <User /> :
                 <a href={getUrlEndpoint(
                     API_HOST,
