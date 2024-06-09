@@ -15,25 +15,31 @@ interface ButtonProps extends
     fontWeight?: number | string;
     fit?: boolean;
     transparent?: boolean;
-    isLoading?: boolean
+    isLoading?: boolean;
+    bgColor?: string;
 }
 
 const Button: FC<ButtonProps> = ({
     className,
     children,
     fontSize = '14px',
-    fontWeight = '400',
+    fontWeight = '500',
     type = 'primary',
     icon,
     shape,
-    size = 'middle',
+    size = 'large',
     onClick,
     htmlType,
     style,
+    bgColor,
     ...props
 }) => {
     return (
-        <AntdConfigProvider theme={{ token: { colorPrimary: COLOR.PRIMARY_BUTTON } }}>
+        <AntdConfigProvider theme={{
+            token: {
+                colorPrimary: bgColor || COLOR.PRIMARY_BUTTON,
+            }
+        }}>
             <AntdButton
                 className={clsx('flex items-center', className)}
                 style={{

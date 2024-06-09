@@ -7,17 +7,13 @@ import { AntdHeader, ToastContext, ToastInstance } from "layout"
 import { useAppDispatch, useAppSelector } from "hooks"
 import { useRouter } from "next/router"
 import Link from "next/link"
-import { API_AUTH_PORT, API_HOST, SERVICE } from "utils/constant"
-import { useLazyQuery, useQuery } from "@apollo/client"
+import { API_AUTH_PORT, API_HOST, COLOR, SERVICE } from "utils/constant"
+import { useLazyQuery } from "@apollo/client"
 import { GET_USER_CART_COUNT } from "graphql/cart"
 import { setUserCartCount } from "store/cart/slice"
 import { getUrlEndpoint } from "utils/helper"
-import Slider, { Settings } from "react-slick"
 import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
-import { GET_ALL_PROMOTIONS } from "graphql/promotion/query"
-import { PromotionEntity } from "__generated__/graphql"
-import { isEmpty } from "lodash"
 
 const navLinks = [
     {
@@ -48,7 +44,7 @@ const Header: FC<HeaderProps> = ({
     const router = useRouter()
 
     const [getUserCartCount] = useLazyQuery(GET_USER_CART_COUNT)
-    const { data: dataPromotions } = useQuery(GET_ALL_PROMOTIONS)
+
     const [open, setOpen] = useState<boolean>(false)
 
     useEffect(() => {
@@ -69,7 +65,7 @@ const Header: FC<HeaderProps> = ({
     )
 
     const Left = (
-        <Container width="50" height="100" flex align="center" gap='16'
+        <Container width="20" height="100" flex align="center"
             className={styles.left}>
             <Div
                 className={styles.logo}
@@ -80,22 +76,29 @@ const Header: FC<HeaderProps> = ({
                     alt='logo'
                 />
             </Div>
-            <OpenSider onClick={() => setOpen(true)} />
+            {/* <OpenSider onClick={() => setOpen(true)} /> */}
+            <Text fontSize="1.25rem" fontWeight={500} color="#fff">The<br /> Bookworm</Text>
+        </Container>
+    )
+
+    const Center = (
+        <Container width="60" height="100" flex direct="row" gap='32' align="center" justify="center"
+            className={styles.right}>
+            {Links}
+            <Link href={{ pathname: '/cart' }}><span className={styles.link}>Cart ({count})</span></Link>
         </Container>
     )
 
     const Right = (
-        <Container width="50" height="100" flex direct="row" gap='16' align="center" justify="end"
+        <Container width="20" height="100" flex direct="row" gap='16' align="center" justify="end"
             className={styles.right}>
-            {Links}
-            <Link href={{ pathname: '/cart' }}><span className={styles.link}>Cart ({count})</span></Link>
             {isSession ? <User /> :
                 <a href={getUrlEndpoint(
                     API_HOST,
                     API_AUTH_PORT,
                     '/auth/login'
                 )}>
-                    <Button>Login</Button>
+                    <Button bgColor='#fff' fontWeight={600} type="default"><Text color={COLOR.BLACK_TEXT}>Login</Text></Button>
                 </a>
             }
         </Container>
@@ -112,32 +115,11 @@ const Header: FC<HeaderProps> = ({
         </Drawer>
     )
 
-    const settings: Settings = {
-        dots: false,
-        infinite: true,
-        speed: 10000,
-        autoplay: true,
-        slidesToShow: 1,
-        slidesToScroll: 1,
-        arrows: false,
-    }
-
-    const Promotions = !isEmpty(dataPromotions?.promotions) ? (
-        <Slider {...settings}>
-            {(dataPromotions?.promotions as PromotionEntity[])?.map((promotion, index) => (
-                <Container key={index} color="#fff" className={styles.promotion}>
-                    <Text tag="p" className="w-full text-center" fontSize="1rem">{promotion.name}</Text>
-                    <Text tag="p" className="w-full text-center" fontSize="0.75rem">{promotion.description}</Text>
-                </Container>
-            ))}
-        </Slider>
-    ) : null
-
     return (
         <AntdHeader className={styles.header}>
-            {Promotions}
             <Container className={clsx(styles.root, className)} flex gap='16'>
                 {Left}
+                {Center}
                 {Right}
                 {Sider}
             </Container>

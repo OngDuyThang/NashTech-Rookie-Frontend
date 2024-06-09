@@ -164,7 +164,6 @@ const Detail: FC = () => {
                 fetchPolicy: 'network-only'
             })
             if (data?.getUserCartCount) {
-                console.log('data?.getUserCartCount', data?.getUserCartCount)
                 dispatch(setUserCartCount(data?.getUserCartCount))
             }
         } catch (e) {

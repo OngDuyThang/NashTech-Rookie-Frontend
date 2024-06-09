@@ -8,6 +8,7 @@ query Promotions {
         discount_percent
         id
         name
+        image
         updated_at
     }
 }

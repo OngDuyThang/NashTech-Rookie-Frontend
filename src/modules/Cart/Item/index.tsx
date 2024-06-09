@@ -40,7 +40,7 @@ const CartItem: FC<CartItemProps> = ({
     }, [finalQuantity])
 
     return (
-        <Container flex align='center' className='px-4 py-8' style={{ borderBottom: `2px solid ${COLOR.PASTEL_BLUE}` }}>
+        <Container flex align='center' className='px-4 py-8' style={{ borderBottom: `2px solid #ebebeb` }}>
             <Div className={styles.info}>
                 <Div className={styles.image}>
                     <Image

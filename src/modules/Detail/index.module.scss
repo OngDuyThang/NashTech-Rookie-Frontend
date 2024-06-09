@@ -5,12 +5,11 @@
         .top {
 
             .detail {
-                border: 2px solid var(--pastel-blue);
+                box-shadow: var(--box-shadow);
                 border-radius: 4px;
 
                 .book {
                     width: 350px;
-                    border: 2px solid var(--pastel-blue);
                     margin: 16px;
                     border-radius: 4px;
 
@@ -22,13 +21,13 @@
             }
 
             .price {
-                border: 2px solid var(--pastel-blue);
+                box-shadow: var(--box-shadow);
                 border-radius: 4px;
                 height: fit-content;
 
                 .amount {
                     padding: 16px 32px;
-                    background-color: var(--light-blue);
+                    background-color: var(--light-grey);
                     border-radius: 4px;
                     display: flex;
                     gap: 8px;
@@ -72,7 +71,7 @@
                     justify-content: space-between;
                     align-items: center;
                     padding: 16px;
-                    background-color: var(--light-blue);
+                    background-color: var(--light-grey);
                 }
             }
         }
@@ -80,14 +79,14 @@
         .bottom {
             .reviews {
                 height: fit-content;
-                border: 2px solid var(--pastel-blue);
+                box-shadow: var(--box-shadow);
                 border-radius: 4px;
                 padding: 32px;
-                background-color: var(--light-blue);
+                background-color: #fdfcfc;
 
                 .review {
                     padding-bottom: 16px;
-                    border-bottom: 2px solid var(--pastel-blue);
+                    border-bottom: 2px solid var(--dark-blue);
                 }
 
                 .stars {
@@ -103,14 +102,14 @@
             }
 
             .write-review {
-                border: 2px solid var(--pastel-blue);
+                box-shadow: var(--box-shadow);
                 border-radius: 4px;
                 height: fit-content;
 
                 .head {
                     padding: 16px 32px;
                     border-radius: 4px;
-                    background-color: var(--light-blue);
+                    background-color: var(--light-grey);
                 }
 
                 .rating {

@@ -3,12 +3,12 @@
         padding: 16px;
 
         .left {
-            border: 2px solid var(--pastel-blue);
+            box-shadow: var(--box-shadow);
             border-radius: 4px;
 
             .head {
                 padding: 16px;
-                background-color: var(--light-blue);
+                background-color: var(--light-grey);
                 display: flex;
 
                 span {
@@ -100,19 +100,19 @@
                 .btns {
                     padding: 8px 16px;
                     border-radius: 4px;
-                    background-color: var(--light-blue);
+                    background-color: var(--light-grey);
                 }
             }
         }
 
         .right {
-            border: 2px solid var(--pastel-blue);
+            box-shadow: var(--box-shadow);
             border-radius: 4px;
             height: fit-content;
 
             .head {
                 padding: 16px;
-                background-color: var(--light-blue);
+                background-color: var(--light-grey);
                 display: flex;
                 justify-content: center;
                 align-items: center;

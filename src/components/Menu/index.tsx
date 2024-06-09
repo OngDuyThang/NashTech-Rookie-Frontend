@@ -45,8 +45,9 @@ const Menu: FC<MenuProps> = ({
             },
             components: {
                 Menu: {
-                    itemHoverBg: COLOR.LIGHT_BLUE,
-                    itemActiveBg: COLOR.LIGHT_BLUE
+                    itemHoverBg: '#ebebeb',
+                    // itemActiveBg: '#ebebeb'
+                    itemSelectedBg: '#ebebeb'
                 }
             }
         }}>

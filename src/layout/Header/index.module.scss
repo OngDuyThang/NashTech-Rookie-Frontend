@@ -1,18 +1,10 @@
 .header {
     all: unset;
-
-    .promotion {
-        display: flex;
-        padding: 2px 16px;
-        text-align: center;
-        background-color: rgb(243, 70, 70);
-        font-weight: 600;
-    }
 }
 
 .root {
     height: var(--header-height);
-    background-color: var(--pastel-blue);
+    background-color: var(--dark-blue);
     color: var(--light-text);
     padding: 0 16px;
     overflow-x: auto;

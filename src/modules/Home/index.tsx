@@ -1,11 +1,16 @@
-import { Button, Carousel, Container, Div, Spin, Text } from 'components'
+import { Button, Carousel, Container, Div, Image, Spin, Text } from 'components'
 import { Product, Products } from 'modules/Components'
 import { useEffect, useState, type FC } from 'react'
 import styles from './index.module.scss'
 import { Space } from 'antd'
 import { useQuery } from '@apollo/client'
 import { GET_POPULAR_PRODUCTS, GET_PROMOTION_PRODUCTS, GET_RECOMMEND_PRODUCTS } from 'graphql/product'
-import { ProductEntity } from '__generated__/graphql'
+import { ProductEntity, PromotionEntity } from '__generated__/graphql'
+import Slider, { Settings } from "react-slick"
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+import { GET_ALL_PROMOTIONS } from 'graphql/promotion/query'
+import { isEmpty } from 'lodash'
 
 const Loading = (
     <Div className='w-full h-32 flex justify-center items-center'>
@@ -17,11 +22,42 @@ const Home: FC = () => {
     const { data: dataPromotion } = useQuery(GET_PROMOTION_PRODUCTS)
     const { data: dataRecommend } = useQuery(GET_RECOMMEND_PRODUCTS)
     const { data: dataPopular } = useQuery(GET_POPULAR_PRODUCTS)
+    const { data: dataPromotions } = useQuery(GET_ALL_PROMOTIONS)
     const [data, setData] = useState<ProductEntity[]>([])
 
     useEffect(() => {
         setData(dataRecommend?.recommendProducts)
     }, [dataRecommend])
+
+    const settings: Settings = {
+        dots: true,
+        infinite: true,
+        speed: 3000,
+        autoplay: true,
+        slidesToShow: 1,
+        slidesToScroll: 1,
+        arrows: false,
+    }
+
+    const PromotionAds = !isEmpty(dataPromotions?.promotions) ? (
+        <Container className={styles['promotion-ads-container']}>
+            <Slider {...settings} className={styles.slider}>
+                {(dataPromotions?.promotions as PromotionEntity[])?.map((promotion, index) => (
+                    <Container key={index} color="#fff" className={styles['promotion-ads']}>
+                        <Image
+                            src={promotion?.image || ''}
+                            alt='promotion image'
+                            fit='cover'
+                        />
+                        <Container className={styles.info}>
+                            <Text tag="p" className={styles.name} >{promotion.name}</Text>
+                            <Text tag="p" className={styles.description} >{promotion.description}</Text>
+                        </Container>
+                    </Container>
+                ))}
+            </Slider>
+        </Container>
+    ) : null
 
     const renderPromotions = (dataPromotion?.promotionProducts as ProductEntity[])?.map((product, index) => (
         <Div key={index}>
@@ -31,7 +67,7 @@ const Home: FC = () => {
 
     const Head = (
         <Container flex justify='between' align='center' className={styles.head}>
-            <Text fontSize='1.25rem'>
+            <Text fontSize='1.75rem' fontWeight={500}>
                 On Sale
             </Text>
             <Button>
@@ -53,12 +89,12 @@ const Home: FC = () => {
     const Featured = (
         <>
             <Container flex direct='column' justify='center' align='center' gap={16} className='py-8'>
-                <Text fontSize='1.25rem'>
+                <Text fontSize='1.75rem' fontWeight={500}>
                     Featured Books
                 </Text>
                 <Space size={32}>
-                    <Button onClick={() => setData(dataRecommend?.recommendProducts)}>Recommend</Button>
-                    <Button onClick={() => setData(dataPopular?.popularProducts)}>Popular</Button>
+                    <Button fontSize='1rem' onClick={() => setData(dataRecommend?.recommendProducts)}>Recommend</Button>
+                    <Button fontSize='1rem' onClick={() => setData(dataPopular?.popularProducts)}>Popular</Button>
                 </Space>
             </Container>
             <Products
@@ -70,6 +106,7 @@ const Home: FC = () => {
 
     return (
         <Container className={styles.root}>
+            {PromotionAds}
             {Head}
             {Promotions}
             {Featured}

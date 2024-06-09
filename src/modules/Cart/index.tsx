@@ -20,6 +20,7 @@ import { Elements } from '@stripe/react-stripe-js'
 import { Radio, Space } from 'antd'
 import { useRouter } from 'next/router'
 import { FIND_ORDER_PROMOTION } from 'graphql/promotion/query'
+import { FaStripe, FaTruck } from 'react-icons/fa'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string, { locale: 'en' });
 
@@ -266,15 +267,19 @@ const Cart: FC = () => {
                 label='Payment Method'
                 name='payment_method'
             >
-                <Radio.Group defaultValue={PAYMENT_METHOD.COD}>
-                    <Radio value={PAYMENT_METHOD.COD}>{PAYMENT_METHOD.COD}</Radio>
-                    <Radio value={PAYMENT_METHOD.STRIPE}>{PAYMENT_METHOD.STRIPE}</Radio>
+                <Radio.Group defaultValue={PAYMENT_METHOD.COD} className='w-full flex'>
+                    <Radio value={PAYMENT_METHOD.COD} style={{ border: '1px solid #ebebeb' }} className='w-[50%] p-4 rounded-lg'>
+                        <FaTruck className='w-8 h-8 text-blue-950 mt-1 ml-2' />
+                    </Radio>
+                    <Radio value={PAYMENT_METHOD.STRIPE} style={{ border: '1px solid #ebebeb' }} className='w-[50%] px-4 py-2 rounded-lg'>
+                        <FaStripe className='w-12 h-12 text-blue-950 mt-1 ml-2' />
+                    </Radio>
                 </Radio.Group>
             </Item>
             <Item>
                 <Button
                     className='w-full flex justify-center items-center py-5'
-                    fontSize='1rem'
+                    fontSize='1.25rem'
                     fontWeight={500}
                     htmlType='submit'
                 >

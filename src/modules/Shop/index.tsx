@@ -108,7 +108,7 @@ const Shop: FC = () => {
 
     const Category = (
         <Div className={clsx('flex flex-col gap-2', styles.category)}>
-            <Text fontSize='1rem' fontWeight={500}>Category</Text>
+            <Text fontSize='1.2rem' fontWeight={500}>Category</Text>
             <Menu
                 items={categoryTree}
                 setSelectedIds={(categoryIds) => { handleRouterQuery({ ...query, categoryIds }) }}
@@ -118,7 +118,7 @@ const Shop: FC = () => {
 
     const Author = (
         <Div className={clsx('flex flex-col gap-2', styles.category)}>
-            <Text fontSize='1rem' fontWeight={500}>Author</Text>
+            <Text fontSize='1.2rem' fontWeight={500}>Author</Text>
             <Menu
                 items={
                     (dataAuthors?.authors as AuthorEntity[])
@@ -131,7 +131,7 @@ const Shop: FC = () => {
 
     const Rating = (
         <Div className={clsx('flex flex-col gap-2', styles.category)}>
-            <Text fontSize='1rem' fontWeight={500}>Rating</Text>
+            <Text fontSize='1.2rem' fontWeight={500}>Rating</Text>
             <Menu
                 items={stars.map(star => ({ key: star.value, label: <div className='flex gap-1 text-yellow-500'>{new Array(star.value).fill(0).map(() => <FaStar />)}</div> }))}
                 setSelectedIds={(keys) => { handleRouterQuery({ ...query, ratings: keys }) }}
@@ -141,7 +141,7 @@ const Shop: FC = () => {
 
     const Left = (
         <Container width='20' flex direct='column' gap={16}>
-            <Text fontSize='1rem' fontWeight={500}>
+            <Text fontSize='1.25rem' fontWeight={500}>
                 Filter By
             </Text>
             {Category}
@@ -153,7 +153,7 @@ const Shop: FC = () => {
     const Right = (
         <Container width='80' flex direct='column' justify='start' gap={16}>
             <Container flex justify='between' wrap rowGap={16} className='pl-4'>
-                <Text tag='span' fontSize='1rem' fontWeight={500}>
+                <Text tag='span' fontSize='1.25rem' fontWeight={500}>
                     Showing {query.page + 1} - {(query.page + 1) * query.limit} of {products?.total} books
                 </Text>
                 <Space size={16}>

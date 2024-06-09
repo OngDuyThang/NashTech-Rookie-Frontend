@@ -9,7 +9,7 @@ export const Label: FC<{ title: string, value: string }> = ({ title, value }) =>
     const [_router, query] = useRouterProductQuery()
 
     return (
-        <div>
+        <div style={{ fontSize: '1.15rem' }}>
             {
                 query?.categoryIds?.includes(value) ||
                     query?.authorIds?.includes(value) ||

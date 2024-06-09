@@ -10,9 +10,9 @@ export const API_ASSET_PORT = process.env.NEXT_PUBLIC_API_ASSET_PORT
 export const MAX_LIMIT_NUMBER = 10000
 
 export enum COLOR {
-    PASTEL_BLUE = '#88AED0',
+    DARK_BLUE = '#1E293B',
     LIGHT_BLUE = '#def2f8',
-    PRIMARY_BUTTON = '#125ca5',
+    PRIMARY_BUTTON = '#1E293B',
     BLACK_TEXT = '#515151'
 }
 

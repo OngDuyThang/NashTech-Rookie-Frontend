@@ -10,13 +10,13 @@ const responsives: ResponsiveObject[] = [
     {
         breakpoint: 1600,
         settings: {
-            slidesToShow: 4,
+            slidesToShow: 5,
         }
     },
     {
         breakpoint: 1200,
         settings: {
-            slidesToShow: 3,
+            slidesToShow: 4,
         }
     },
     {

@@ -61,6 +61,7 @@ export const Select: FC<SelectProps> = ({
                 suffixIcon={suffixIcon}
                 // bordered={false}
                 popupMatchSelectWidth={false}
+                size="large"
                 {...props}
             >
                 {children}

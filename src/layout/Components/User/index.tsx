@@ -1,8 +1,9 @@
 import { Div, Image, Dropdown } from 'components'
 import { useAppDispatch, useAppSelector } from 'hooks';
 import { capitalize } from 'lodash';
+import { useRouter } from 'next/router';
 import { type FC } from 'react'
-import { FaUser } from 'react-icons/fa';
+import { FaReceipt, FaUser } from 'react-icons/fa';
 import { MdMail } from "react-icons/md";
 import { PiSignOutBold } from "react-icons/pi";
 import { logoutAction } from 'store/user/slice';
@@ -11,6 +12,7 @@ import { userLogout } from 'utils/helper';
 
 const User: FC = () => {
     const { username, email, picture } = useAppSelector(state => state.user)
+    const router = useRouter()
     const iconCss: string = 'w-4 h-4'
     const items: TDropdownItems = [
         {
@@ -24,9 +26,19 @@ const User: FC = () => {
             key: '2',
         },
         {
+            label: capitalize('my order'),
+            icon: <FaReceipt className={iconCss} />,
+            key: '3',
+            onClick: () => {
+                router.push({
+                    pathname: '/order'
+                })
+            }
+        },
+        {
             label: capitalize('log out'),
             icon: <PiSignOutBold className={iconCss} />,
-            key: '3',
+            key: '4',
             onClick: () => {
                 userLogout()
             }
@@ -38,7 +50,7 @@ const User: FC = () => {
             items={items}
             onClick={() => {}}
         >
-            <Div className='w-[30px] h-[30px] rounded-full overflow-hidden'>
+            <Div className='w-[38px] h-[38px] rounded-full overflow-hidden'>
                 <Image
                     src={picture || '/images/user.png'}
                     alt='avatar'
