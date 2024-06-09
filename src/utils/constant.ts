@@ -55,7 +55,6 @@ export enum PAYMENT_METHOD {
 }
 
 export enum PAYMENT_STATUS {
-    PENDING = 'PENDING',
     PAID = 'PAID',
     UNPAID = 'UNPAID'
 }

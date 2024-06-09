@@ -1,4 +1,4 @@
-import { Button, CheckoutForm, Container, Div, Form, Input, LoadingScreen, Modal, Option, Select, Text, TextArea } from 'components'
+import { Button, CheckoutForm, Container, Div, Form, Input, LoadingScreen, Modal, Text, TextArea } from 'components'
 import { Title } from 'modules/Components'
 import { useContext, useEffect, useRef, useState, type FC } from 'react'
 import styles from './index.module.scss'
@@ -8,17 +8,18 @@ import { GET_USER_CART, REMOVE_CART_ITEM, UPDATE_CART_ITEM } from 'graphql/cart'
 import { ToastContext, ToastInstance } from 'layout'
 import { CartEntity, CartItemEntity } from '__generated__/graphql'
 import CartItem from './Item'
-import { API_HOST, API_ORDER_PORT, PAYMENT_METHOD, SERVICE } from 'utils/constant'
+import { PAYMENT_METHOD, SERVICE } from 'utils/constant'
 import { cloneDeep, filter, isEmpty, round, set } from 'lodash'
 import { PLACE_ORDER } from 'graphql/order'
 import { Item, useForm } from 'components/Form'
-import { getAccessToken, getUrlEndpoint, isSession } from 'utils/helper'
+import { getAccessToken, isSession } from 'utils/helper'
 import { setUserCartCount } from 'store/cart/slice'
 import { useAppDispatch, useAppSelector } from 'hooks'
 import { loadStripe } from '@stripe/stripe-js'
 import { Elements } from '@stripe/react-stripe-js'
-import { Radio } from 'antd'
+import { Radio, Space } from 'antd'
 import { useRouter } from 'next/router'
+import { FIND_ORDER_PROMOTION } from 'graphql/promotion/query'
 
 const stripePromise = loadStripe(process.env.NEXT_PUBLIC_STRIPE_PUBLISHABLE_KEY as string, { locale: 'en' });
 
@@ -32,11 +33,13 @@ const Cart: FC = () => {
     const toast = useContext(ToastContext) as ToastInstance
 
     const [items, setItems] = useState<CartItemEntity[]>()
+    const [discount, setDiscount] = useState<number>(0)
     const [open, setOpen] = useState<boolean>(false)
     const [total, setTotal] = useState<number>(0)
     const [form] = useForm()
 
     const [getUserCart] = useLazyQuery(GET_USER_CART)
+    const [findOrderPromotion] = useLazyQuery(FIND_ORDER_PROMOTION)
     const [updateCartItem] = useMutation(UPDATE_CART_ITEM)
     const [removeCartItem] = useMutation(REMOVE_CART_ITEM)
     const [placeOrder, { loading }] = useMutation(PLACE_ORDER)
@@ -60,6 +63,14 @@ const Cart: FC = () => {
                     return round(result, 2)
                 }, 0)
                 setTotal(total)
+
+                const { data: dataOrderPromotion } = await findOrderPromotion({
+                    variables: { total },
+                    context: { service: SERVICE.CART },
+                    fetchPolicy: 'network-only'
+                })
+                const discount = dataOrderPromotion?.findOrderPromotion as number || 0
+                setDiscount(discount)
             })()
             isFirstRender.current = false
         }
@@ -75,6 +86,14 @@ const Cart: FC = () => {
                 context: { service: SERVICE.CART }
             })
             toast.success({ message: 'Update quantity successfully' })
+
+            const { data: dataOrderPromotion } = await findOrderPromotion({
+                variables: { total },
+                context: { service: SERVICE.CART },
+                fetchPolicy: 'network-only'
+            })
+            const discount = dataOrderPromotion?.findOrderPromotion as number || 0
+            setDiscount(discount)
         } catch (e) {
             toast.error({ message: String(e) })
         }
@@ -88,11 +107,21 @@ const Cart: FC = () => {
             })
             toast.success({ message: 'Remove item successfully' })
 
+            const item = items?.find(item => item.id == id)
+            const newTotal = total - (item?.product?.price || 0) * (item?.quantity || 0)
             setItems(filter(items || [], item => item.id != id))
-            setTotal(0)
+            setTotal(newTotal)
             if (count) {
                 dispatch(setUserCartCount(count - 1))
             }
+
+            const { data: dataOrderPromotion } = await findOrderPromotion({
+                variables: { total: newTotal },
+                context: { service: SERVICE.CART },
+                fetchPolicy: 'network-only'
+            })
+            const discount = dataOrderPromotion?.findOrderPromotion as number || 0
+            setDiscount(discount)
         } catch (e) {
             toast.error({ message: String(e) })
         }
@@ -103,21 +132,6 @@ const Cart: FC = () => {
             toast.error({ message: 'You must login first' })
             return
         }
-
-        // const url = getUrlEndpoint(
-        //     API_HOST,
-        //     API_ORDER_PORT,
-        //     '/api/orders/test'
-        // )
-        // fetch(url, {
-        //     method: "POST",
-        //     headers: { "Content-Type": "application/json" },
-        // })
-        //     .then((res) => res.json())
-        //     .then((data) => {
-        //         console.log(data?.data?.clientSecret)
-        //         setClientSecret(data?.data?.clientSecret)
-        //     });
 
         try {
             const { data } = await placeOrder({
@@ -151,7 +165,10 @@ const Cart: FC = () => {
             handleItemQuantity={async (id, quantity) => await handleItemQuantity(id, quantity)}
             handleRemoveItem={async id => await handleRemoveItem(id)}
             total={total}
-            setTotal={newTotal => setTotal(newTotal)}
+            setTotal={newTotal => {
+                setDiscount(0)
+                setTotal(newTotal)
+            }}
         />
     )) : <Text fontSize='1.5rem' className='w-full flex justify-center items-center h-[50%]'>Your cart is empty</Text>
 
@@ -172,8 +189,24 @@ const Cart: FC = () => {
             <Div className={styles.head}>
                 <Text fontSize='1rem' fontWeight={500}>Cart Totals</Text>
             </Div>
-            <Container direct='column' className='p-4'>
-                <Text fontSize='1.25rem' fontWeight={500} className='w-full text-center'>{total}$</Text>
+
+            <Container className='p-4' >
+                <Container flex direct='column' gap={8} align='center'>
+                    {discount ?
+                        <Space size={8}>
+                            <Text tag='span' fontSize='1.25rem' fontWeight={500} className={
+                                discount ? styles.slash : styles.hide
+                            }>
+                                {discount ? total : null}$
+                            </Text>
+                            <Div className={styles.percent}>-{discount}%</Div>
+                        </Space> : null}
+                    <Text tag='span'
+                        className={styles[discount ? 'org-discount' : 'org']}>
+                        {discount ? round(total - (total * discount) / 100, 2) : round(total, 2)}$
+                    </Text>
+                </Container>
+
                 <Button fontSize='1rem' fontWeight={500} className='w-full py-4 mt-4 flex justify-center'
                     onClick={() => {
                         if (!isSession()) {

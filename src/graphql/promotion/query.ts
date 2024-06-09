@@ -12,3 +12,9 @@ query Promotions {
     }
 }
 `;
+
+export const FIND_ORDER_PROMOTION = gql`
+query FindOrderPromotion($total: Float!) {
+    findOrderPromotion(total: $total)
+}
+`;

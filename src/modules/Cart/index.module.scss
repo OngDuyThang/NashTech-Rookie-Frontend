@@ -57,24 +57,13 @@
 
             .total {
                 width: 10%;
-            }
-
-            .quantity {
-                display: flex;
-                gap: 16px;
-                align-items: center;
-
-                .btns {
-                    padding: 8px 16px;
-                    border-radius: 4px;
-                    background-color: var(--light-blue);
-                }
+                color: var(--black-text);
             }
 
             .org {
                 font-size: 1rem;
                 font-weight: 500;
-                color: rgb(243, 70, 70);
+                color: var(--black-text);
             }
 
             .org-discount {
@@ -86,6 +75,7 @@
 
             .slash {
                 position: relative;
+                color: #787878;
 
                 &::before {
                     content: '';
@@ -101,6 +91,18 @@
             .hide {
                 display: none
             }
+
+            .quantity {
+                display: flex;
+                gap: 16px;
+                align-items: center;
+
+                .btns {
+                    padding: 8px 16px;
+                    border-radius: 4px;
+                    background-color: var(--light-blue);
+                }
+            }
         }
 
         .right {
@@ -114,6 +116,48 @@
                 display: flex;
                 justify-content: center;
                 align-items: center;
+            }
+
+            .org {
+                font-size: 1.5rem;
+                font-weight: 500;
+                color: var(--black-text);
+            }
+
+            .org-discount {
+                font-size: 1.75rem;
+                font-weight: 500;
+                color: var(--black-text);
+            }
+
+            .slash {
+                position: relative;
+                color: #787878;
+
+                &::before {
+                    content: '';
+                    width: 100%;
+                    height: 1px;
+                    background: black;
+                    position: absolute;
+                    top: 50%;
+                    left: 0;
+                }
+            }
+
+            .hide {
+                display: none
+            }
+
+            .percent {
+                width: 40px;
+                height: 40px;
+                border-radius: 50%;
+                background-color: rgb(243, 70, 70);
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                color: #fff;
             }
         }
     }
