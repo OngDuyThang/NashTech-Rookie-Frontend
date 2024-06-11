@@ -22,8 +22,8 @@ const Products: FC<ProductsProps> = ({
     className,
     size = 'default'
 }) => {
-    const render = products?.map(product => (
-        <Div className={styles['product-wrapper']}>
+    const render = products?.map((product, index) => (
+        <Div className={styles['product-wrapper']} key={index}>
             <Product {...{ product }} />
         </Div>
     ))
