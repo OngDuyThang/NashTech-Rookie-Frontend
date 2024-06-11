@@ -60,7 +60,7 @@ const Shop: FC = () => {
                 query: {
                     page: PAGINATION.DEFAULT_PAGE,
                     limit: PAGINATION.DEFAULT_LIMIT,
-                    sort: PRODUCT_SORT.ON_SALE,
+                    sort: PRODUCT_SORT.ALL,
                     categoryIds: [],
                     authorIds: [],
                     ratings: []
@@ -78,7 +78,10 @@ const Shop: FC = () => {
                 const tree = cloneDeep(createCategoryTree(categories))
                 setCategoryTree(tree)
 
-                const { data: dataProducts, error: errorProducts } = await getProducts({ variables: { ...query } })
+                const { data: dataProducts, error: errorProducts } = await getProducts({
+                    variables: { ...query },
+                    fetchPolicy: 'network-only'
+                })
                 const products = dataProducts?.products as ProductList
                 setProducts(products)
 
@@ -117,7 +120,7 @@ const Shop: FC = () => {
     )
 
     const Author = (
-        <Div className={clsx('flex flex-col gap-2', styles.category)}>
+        <Div className={clsx('flex flex-col gap-2 max-h-[400px] overflow-auto', styles.category)}>
             <Text fontSize='1.2rem' fontWeight={500}>Author</Text>
             <Menu
                 items={
@@ -154,15 +157,16 @@ const Shop: FC = () => {
         <Container width='80' flex direct='column' justify='start' gap={16}>
             <Container flex justify='between' wrap rowGap={16} className='pl-4'>
                 <Text tag='span' fontSize='1.25rem' fontWeight={500}>
-                    Showing {query.page + 1} - {(query.page + 1) * query.limit} of {products?.total} books
+                    Showing {Math.min(query.page + 1, products?.data?.length || 0)} - {Number(products?.data?.length) < 10 ? products?.data.length : (query.page + 1) * query.limit} of {products?.total} books
                 </Text>
                 <Space size={16}>
                     <Select
-                        defaultValue={PRODUCT_SORT.ON_SALE}
+                        defaultValue={PRODUCT_SORT.ALL}
                         value={query.sort}
                         onChange={(sort) => handleRouterQuery({ ...query, sort })}
                         className='mt-[-16px]'
                     >
+                        <Option value={PRODUCT_SORT.ALL}>All Books</Option>
                         <Option value={PRODUCT_SORT.ON_SALE}>Sort by on sale</Option>
                         {/* <Option value={PRODUCT_SORT.POPULAR}>Sort by popularrity</Option> */}
                         <Option value={PRODUCT_SORT.PRICE_ASC}>Sort by price low to high</Option>
@@ -191,8 +195,7 @@ const Shop: FC = () => {
                 page={query.page}
                 limit={query.limit}
                 total={products?.total || 0}
-                // onChange={(page, _limit) => handleRouterQuery({ ...query, page: page - 1 })}
-                onChange={() => {}}
+                onChange={(page, _limit) => handleRouterQuery({ ...query, page: page - 1 })}
                 className='w-full flex justify-center absolute bottom-0 left-0 right-0 pb-4'
             />
         </Container>

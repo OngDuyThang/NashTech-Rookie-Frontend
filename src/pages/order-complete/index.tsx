@@ -50,7 +50,7 @@ const OrderCompletePage: FC = () => {
                 <p className="text-gray-600 my-2">Thank you for buying with us.</p>
                 <p> Have a great day!  </p>
                 <div className="py-10 text-center">
-                    <a href="/" className="px-12 bg-blue-800 text-white font-semibold py-3 rounded">
+                    <a href="/" className="px-12 bg-slate-800 text-white font-semibold py-3 rounded hover:text-white">
                         GO BACK
                     </a>
                 </div>

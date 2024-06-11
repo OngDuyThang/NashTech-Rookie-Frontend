@@ -89,6 +89,10 @@ const Detail: FC = () => {
         }
     }, [router])
 
+    useEffect(() => {
+        console.log(reviews)
+    }, [reviews])
+
     const handleRouterQuery = async (
         newQuery: TReviewQueryState
     ) => {
@@ -176,7 +180,7 @@ const Detail: FC = () => {
             <Container flex direct='column' align='end' gap={16} className={styles.book}>
                 <Div className={styles.image}>
                     <Image
-                        src={product?.image || ''}
+                        src={product?.image as string}
                         alt='product image'
                         fit='cover'
                     />
@@ -199,7 +203,22 @@ const Detail: FC = () => {
 
     const Price = (
         <Container width='30' flex direct='column' className={styles.price}>
-            <Div className={styles.amount}>
+            <Container flex direct='column' gap={8} align='center' className={styles.amount}>
+                {product?.promotion ?
+                    <Space size={8}>
+                        <Text tag='span' fontSize='1.25rem' fontWeight={500} className={
+                            product?.promotion ? styles.slash : styles.hide
+                        }>
+                            {product?.price}$
+                        </Text>
+                        <Div className={styles.percent}>-{product?.promotion?.discount_percent}%</Div>
+                    </Space> : null}
+                <Text tag='span'
+                    className={styles[product?.promotion ? 'org-discount' : 'org']}>
+                    {product?.promotion ? round(product?.price - (product?.price * product?.promotion?.discount_percent) / 100, 2) : round(product?.price || 0, 2)}$
+                </Text>
+            </Container>
+            {/* <Div className={styles.amount}>
                 <Text tag='span' fontSize='1.2rem' className={
                     product?.promotion ? styles.slash : styles.hide
                 }>{product?.price}$</Text>
@@ -207,7 +226,7 @@ const Detail: FC = () => {
                     className={styles[product?.promotion?.discount_percent ? 'org-discount' : 'org']}>
                     {product?.promotion?.discount_percent ? round(product?.price - (product?.price * product?.promotion?.discount_percent / 100), 2) : product?.price}$
                 </Text>
-            </Div>
+            </Div> */}
             <Container flex direct='column' justify='center' align='center' gap={32} className='p-8'>
                 <Div className={styles.quantity}>
                     <FaMinus onClick={() => setQuantity(quantity > 1 ? quantity - 1 : 1)} className='cursor-pointer' />
@@ -384,7 +403,7 @@ const Detail: FC = () => {
         </Container>
     )
 
-    if (loading) return <LoadingScreen />
+    if (loading) return <LoadingScreen isRouteLoading />
 
     return (
         <Container className={styles.root}>

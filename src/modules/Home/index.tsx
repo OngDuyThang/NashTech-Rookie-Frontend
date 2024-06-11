@@ -11,6 +11,7 @@ import "slick-carousel/slick/slick.css";
 import "slick-carousel/slick/slick-theme.css";
 import { GET_ALL_PROMOTIONS } from 'graphql/promotion/query'
 import { isEmpty } from 'lodash'
+import { useRouter } from 'next/router'
 
 const Loading = (
     <Div className='w-full h-32 flex justify-center items-center'>
@@ -24,6 +25,8 @@ const Home: FC = () => {
     const { data: dataPopular } = useQuery(GET_POPULAR_PRODUCTS)
     const { data: dataPromotions } = useQuery(GET_ALL_PROMOTIONS)
     const [data, setData] = useState<ProductEntity[]>([])
+    const [btn, setBtn] = useState<'left' | 'right'>('left')
+    const router = useRouter()
 
     useEffect(() => {
         setData(dataRecommend?.recommendProducts)
@@ -70,7 +73,11 @@ const Home: FC = () => {
             <Text fontSize='1.75rem' fontWeight={500}>
                 On Sale
             </Text>
-            <Button>
+            <Button onClick={() => {
+                router.push({
+                    pathname: '/shop'
+                })
+            }}>
                 View All
             </Button>
         </Container>
@@ -93,8 +100,26 @@ const Home: FC = () => {
                     Featured Books
                 </Text>
                 <Space size={32}>
-                    <Button fontSize='1rem' onClick={() => setData(dataRecommend?.recommendProducts)}>Recommend</Button>
-                    <Button fontSize='1rem' onClick={() => setData(dataPopular?.popularProducts)}>Popular</Button>
+                    <Button
+                        fontSize='1rem'
+                        onClick={() => {
+                            setData(dataRecommend?.recommendProducts)
+                            setBtn('left')
+                        }}
+                        bgColor={btn === 'left' ? '#6d6d6d' : undefined}
+                    >
+                        Recommend
+                    </Button>
+                    <Button
+                        fontSize='1rem'
+                        onClick={() => {
+                            setData(dataPopular?.popularProducts)
+                            setBtn('right')
+                        }}
+                        bgColor={btn === 'right' ? '#6d6d6d' : undefined}
+                    >
+                        Popular
+                    </Button>
                 </Space>
             </Container>
             <Products

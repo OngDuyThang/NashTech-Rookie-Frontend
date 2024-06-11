@@ -89,11 +89,11 @@ const Product: FC<ProductProps> = ({
                     alt='product image'
                     fit='cover'
                 />
-                <Text className={styles.discount}>-{promotion?.discount_percent}%</Text>
+                {promotion?.discount_percent ? <Div className={styles.discount}>-{promotion?.discount_percent}%</Div> : null}
             </Div>
             <Div className='w-full px-4 pt-2' >
                 <Text fontSize='1rem' fontWeight={500}>{title}</Text>
-                <Text fontSize='0.85rem'>{author?.pen_name}</Text>
+                <Text fontSize='0.85rem'>{author?.pen_name || 'anonymous'}</Text>
             </Div>
             <Div className={clsx('w-full px-4 py-2 flex gap-1', styles.stars)}>
                 {new Array(

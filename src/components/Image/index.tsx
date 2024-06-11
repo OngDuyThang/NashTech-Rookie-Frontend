@@ -1,4 +1,4 @@
-import { type FC, useState } from 'react'
+import { type FC, useState, useEffect } from 'react'
 import { default as NextImage } from "next/image"
 import { MAX_LIMIT_NUMBER } from 'utils/constant'
 import { Div, Skeleton } from 'components';
@@ -19,12 +19,17 @@ const Image: FC<ImageProps> = ({
 }) => {
     const [isLoading, setIsLoading] = useState<boolean>(true)
     const [isError, setIsError] = useState<boolean>(false)
+    const [imgSrc, setImgSrc] = useState<string>(src)
+
+    useEffect(() => {
+        setImgSrc(src)
+    }, [src])
 
     return (
         <Div className={clsx('w-full h-full relative overflow-hidden', className)}>
-            {isLoading || isError ? <Skeleton type='thumbnail' /> : null}
+            {isLoading ? <Skeleton type='thumbnail' /> : null}
             <NextImage
-                src={src || ''}
+                src={src || imgSrc || ''}
                 alt={alt}
                 width={MAX_LIMIT_NUMBER}
                 height={MAX_LIMIT_NUMBER}
@@ -32,12 +37,12 @@ const Image: FC<ImageProps> = ({
                     width: '100%',
                     height: '100%',
                     objectFit: fit,
-                    visibility: isLoading || isError ? 'hidden' : 'visible',
+                    visibility: isLoading ? 'hidden' : 'visible',
                     position: 'absolute'
                 }}
                 loading='lazy'
                 onLoad={() => setIsLoading(false)}
-                onError={() => setIsError(true)}
+            // onError={() => setIsError(true)}
             />
         </Div>
     )

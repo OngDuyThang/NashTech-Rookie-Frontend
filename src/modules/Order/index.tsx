@@ -34,7 +34,7 @@ const Order: FC = () => {
                 My Order
             </Title>
             <Container className='p-4'>
-                <Collapse items={items} defaultActiveKey={['1']} />;
+                <Collapse items={items} defaultActiveKey={['1']} />
             </Container>
         </Container>
     )
